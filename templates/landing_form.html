@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome to Book My Show</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="movie-bg">
+      <div class="movie-form-card">
+        <div class="movie-form-header">
+          <span class="movie-icon">🎬</span>
+          <h1>Welcome to Book My Show</h1>
+          <p class="movie-sub">
+            Book your tickets for the best events and movies!
+          </p>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="movie-form-group">
+            <label for="id_name">Name<span style="color: red">*</span></label>
+            {{ form.name }}
+          </div>
+          <div class="movie-form-group">
+            <label for="id_phone"
+              >Phone Number<span style="color: red">*</span></label
+            >
+            {{ form.phone }}
+          </div>
+          <div class="movie-form-group">
+            <label for="id_dob"
+              >Date of Birth<span style="color: red">*</span></label
+            >
+            {{ form.dob }}
+          </div>
+          <button class="movie-form-btn" type="submit">Continue</button>
+        </form>
+      </div>
+    </div>
+    <style>
+      body {
+        background: linear-gradient(120deg, #f8f9fa 0%, #e3f2fd 100%);
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      .movie-bg {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: url("https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1200&q=80")
+          center/cover no-repeat;
+        position: relative;
+      }
+      .movie-bg:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(245, 245, 255, 0.85);
+        z-index: 1;
+      }
+      .movie-form-card {
+        position: relative;
+        z-index: 2;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(90, 36, 120, 0.18);
+        padding: 40px 32px 32px 32px;
+        width: 370px;
+        text-align: center;
+        border: 2px solid #d81b60;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .movie-form-header {
+        margin-bottom: 18px;
+      }
+      .movie-icon {
+        font-size: 2.5rem;
+        color: #d81b60;
+        margin-bottom: 8px;
+        display: block;
+      }
+      .movie-form-header h1 {
+        color: #d81b60;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+      }
+      .movie-sub {
+        color: #6a1b9a;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+      }
+      .movie-form-group {
+        margin-bottom: 18px;
+        text-align: left;
+        width: 100%;
+      }
+      .movie-form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #6a1b9a;
+        font-size: 1rem;
+      }
+      .movie-form-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1.5px solid #b39ddb;
+        font-size: 1rem;
+        background: #f3e5f5;
+        transition: border 0.2s;
+        box-shadow: 0 2px 8px rgba(216, 27, 96, 0.08);
+      }
+      .movie-form-group input:focus {
+        border: 2px solid #d81b60;
+        outline: none;
+      }
+      .movie-form-btn {
+        background: linear-gradient(90deg, #d81b60 0%, #6a1b9a 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 0;
+        width: 100%;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(216, 27, 96, 0.14);
+        margin-top: 10px;
+        transition: background 0.2s;
+      }
+      .movie-form-btn:hover {
+        background: linear-gradient(90deg, #6a1b9a 0%, #d81b60 100%);
+      }
+    </style>
+  </body>
+</html>

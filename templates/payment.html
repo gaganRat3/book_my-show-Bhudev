@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Information</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <style>
+        .payment-modal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f6f7fb;
+        }
+        .payment-card {
+            background: #fff;
+            padding: 32px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 320px;
+        }
+        .payment-title {
+            margin-bottom: 16px;
+            color: #1976d2;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .payment-whatsapp {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .payment-whatsapp b {
+            color: #388e3c;
+        }
+        .payment-qr {
+            margin-bottom: 18px;
+            border-radius: 8px;
+        }
+        .payment-desc {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 18px;
+        }
+        .payment-close {
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 32px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-modal">
+        <div class="payment-card">
+            <div class="payment-title">Payment Information</div>
+            <div class="payment-whatsapp">WhatsApp Number: <b>+91 98765 43210</b></div>
+            <img class="payment-qr" src="https://api.qrserver.com/v1/create-qr-code/?data=whatsapp:+919876543210&size=180x180" alt="QR Code" />
+            <div class="payment-desc">Scan the QR code to pay via WhatsApp or UPI.</div>
+            <form method="post" enctype="multipart/form-data" style="margin-bottom:18px;">
+                {% csrf_token %}
+                <label for="id_screenshot" style="font-size:16px; margin-bottom:8px; display:block;">Upload Payment Screenshot:</label>
+                <input type="file" name="screenshot" id="id_screenshot" accept="image/*" required style="margin-bottom:12px;" />
+                <button type="submit" style="background:#1976d2; color:#fff; border:none; border-radius:8px; padding:8px 24px; font-size:15px; cursor:pointer;">Upload</button>
+            </form>
+            {% if uploaded_url %}
+                <div style="margin-bottom:12px; color:#388e3c; font-size:15px;">Screenshot uploaded successfully!</div>
+                <img src="{{ uploaded_url }}" alt="Payment Screenshot" style="max-width:220px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.12);" />
+            {% endif %}
+            <a href="/" class="payment-close">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
