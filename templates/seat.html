@@ -1,14 +1,3 @@
-<!-- Optimized Fixed Footer Popup -->
-<!-- Demo canvas removed: we are using DOM-based seat rendering only -->
-<!-- Professional Canvas Seatmap (structure untouched) -->
-<!-- removed demo canvas wrapper and element -->
-<style>
-  /* Removed pay button styles */
-</style>
-<script>
-  // Optimized footer popup logic
-  // Removed pay button JavaScript
-</script>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,61 +5,23 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Seat Selection - Static Replica</title>
     <style>
-      /* Show selected seats horizontally in the card */
-      #selected-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        font-weight: 600;
-      }
-      #selected-list span {
-        background: #e3f2fd;
-        color: #1976d2;
-        border-radius: 4px;
-        padding: 2px 10px;
-        margin-right: 0;
-        font-size: 16px;
-      }
-      /* Move summary popup to left of pay button */
-      #summaryPopup {
-        position: absolute;
-        left: 0;
-        bottom: -34px;
-        z-index: 100;
-        min-width: 260px;
-        max-width: 350px;
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        background: #fff;
-        padding: 18px 20px 16px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-      }
       :root {
         --seat-size: 18px;
         --gap: 2px;
         --label-width: 16px;
-        --bg: #f6f7fb;
-        --card-bg: #fff;
+
         --muted: #cfcfd6;
       }
       body {
         font-family: Inter, Segoe UI, Roboto, Arial;
-        margin: 0;
+        margin: 10px;
         background: var(--bg);
-        color: #111;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+        color: #c4c4c4;
       }
       .container {
         margin: 0 auto;
         width: 100%;
         padding: 0 5px;
-        flex: 1 0 auto;
-        display: flex;
-        flex-direction: column;
       }
       h1 {
         font-size: 20px;
@@ -81,7 +32,7 @@
         text-align: center;
         padding: 8px;
         border-radius: 8px;
-        margin-bottom: 18px;
+        margin: -150px;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
         color: #333;
         font-weight: 600;
@@ -101,7 +52,7 @@
       /* each section wrapper */
       .section,
       .section1 {
-        background: var(--card-bg);
+        background: rgba(255, 255, 255, 0);
         border-radius: 6px;
         padding: 4px;
         box-shadow: 0 2px 8px rgba(11, 24, 70, 0.04);
@@ -168,15 +119,14 @@
         font-size: 8px;
         border: 2px solid rgba(0, 0, 0, 0.08);
         cursor: pointer;
+
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1),
           0 2px 4px rgba(0, 0, 0, 0.06) inset;
-        will-change: transform, background, color, border-color;
-        transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
-          background 0.18s, color 0.18s, border-color 0.18s;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
         position: relative;
       }
       .seat:hover {
-        transform: translate3d(0, -2px, 0);
+        transform: translateY(-3px);
       }
 
       /* seat variants */
@@ -213,19 +163,8 @@
         transform: none;
       }
       .selected {
-        outline: 4px solid #222;
-        box-shadow: 0 0 0 8px rgba(255, 255, 0, 0.25),
-          0 8px 24px rgba(34, 34, 34, 0.18);
-        background: #ffeb3b !important;
-        color: #222 !important;
-        border: 4px solid #222 !important;
-        transform: scale(1.22);
-        transition: transform 0.12s ease, box-shadow 0.12s ease,
-          outline 0.12s ease;
-      }
-      .seat:focus,
-      .seat:active {
-        outline: 2px dashed #222;
+        outline: 3px solid rgba(46, 204, 113, 0.18);
+        box-shadow: 0 6px 12px rgba(46, 204, 113, 0.08);
       }
 
       /* smaller seat labels inside circle */
@@ -272,11 +211,57 @@
         gap: 4px;
         padding: 6px;
       }
+      .top-horizontal1 {
+        /* Keep the same vertical spacing as top-horizontal but remove the
+           large horizontal padding, allowing content to center correctly. */
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 6px; /* remove 400px side padding that previously pushed content */
+        align-items: center; /* center child rows horizontally */
+      }
 
       .row-horizontal {
         display: flex;
         align-items: center;
         gap: 0px;
+      }
+
+      /* Center the row label and seats for the top-main section so the Z row appears in the middle */
+      #top-main-section .row-horizontal {
+        justify-content: center;
+      }
+
+      /* Make label boxes absolute so the seats can be centered without shifting */
+      #top-main-section .row-horizontal {
+        position: relative;
+      }
+
+      /* Label at start */
+      #top-main-section .row-horizontal .row-label-left:first-child {
+        position: absolute;
+        left: -36px; /* move left label slightly outside the seat row */
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+      }
+
+      /* Label at end */
+      #top-main-section .row-horizontal .row-label-left:last-child {
+        position: absolute;
+        right: -36px; /* move right label slightly outside the seat row */
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+      }
+
+      /* Ensure the seat parent fills the available width so media query calc can show all seats,
+         while centering content within it. */
+      #top-main-section .seats-horizontal {
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
       }
 
       .row-label-left {
@@ -302,7 +287,7 @@
         display: flex;
         gap: 5px;
         align-items: center;
-        flex-wrap: wrap;
+        flex-wrap: wrap; /* default behavior for other sections */
         padding: 5px 8px;
         background: linear-gradient(
           135deg,
@@ -312,6 +297,92 @@
         border-radius: 10px;
         border: 1px solid rgba(203, 213, 225, 0.6);
         box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Force the top main section seats to be in a single row and allow horizontal scrolling
+         by default — we'll override for small viewports to avoid showing a scrollbar. */
+      #top-main-section .seats-horizontal {
+        flex-wrap: nowrap; /* keep all seats on a single line */
+        overflow-x: auto; /* allow horizontal region if needed */
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 6px; /* room for scrollbar without shifting layout */
+        justify-content: center; /* center seats within the row */
+      }
+
+      /* Make sure each seat does not shrink and stays aligned */
+      #top-main-section .seats-horizontal .seat {
+        flex: 0 0 auto;
+      }
+
+      /* --- Responsive: make top main row fit on small screens without showing a scrollbar --- */
+      /* The Z row has 26 seats; we'll calculate a width for each seat so the whole row fits. */
+      #top-main-section {
+        --top-seat-count: 26; /* number of seats in the top main row */
+        --top-gap-count: 25; /* number of gaps between seats */
+        display: flex;
+        justify-content: center; /* center the top main section horizontally */
+      }
+
+      /* Hide the native scroll bar while allowing touch scrolling for mobile when small adjustments are needed. */
+      @media (max-width: 768px) {
+        #top-main-section .seats-horizontal {
+          overflow-x: auto; /* allow user scroll if content still overflows */
+          scrollbar-width: none; /* hide scrollbar on Firefox */
+          -ms-overflow-style: none; /* hide scrollbar on IE and Edge */
+        }
+
+        /* compute width per seat so 26 seats fit into the available width of the container */
+        #top-main-section .seats-horizontal .seat {
+          width: calc(
+            (100% - 16px - calc(var(--top-gap-count) * var(--gap))) /
+              var(--top-seat-count)
+          );
+          aspect-ratio: 1/1; /* keep the circular shape */
+          min-width: 10px; /* don't let it collapse too small */
+          max-width: 22px; /* limit the width so it never gets abnormally big on mid screens */
+          font-size: clamp(6px, 1.5vw, 9px);
+          border-width: 1px;
+          box-sizing: border-box; /* ensure borders included in width calc */
+        }
+      }
+
+      /* For very small screens, reduce font-size and spacing slightly further */
+      @media (max-width: 420px) {
+        #top-main-section .seats-horizontal .seat {
+          width: calc(
+            (100% - 12px - calc(var(--top-gap-count) * (var(--gap) / 1))) /
+              var(--top-seat-count)
+          );
+          min-width: 8px;
+          font-size: clamp(5px, 1.8vw, 8px);
+          box-sizing: border-box; /* ensure borders included in width calc */
+        }
+      }
+
+      /* Hide webkit scrollbar but keep native scroll for touch interactions */
+      #top-main-section .seats-horizontal::-webkit-scrollbar {
+        display: none;
+        height: 0px;
+      }
+
+      /* Ensure top-main SECTION seats never shrink - keep a fixed size and allow horizontal scrolling. */
+      /* This preserves the seat size on mobile and desktop while allowing touch scrolling for overflow. */
+      #top-main-section .seats-horizontal {
+        overflow-x: auto; /* allow horizontal scroll */
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* hide scrollbar on Firefox */
+        -ms-overflow-style: none; /* hide scrollbar on IE and Edge */
+        white-space: nowrap; /* keep the seats in a single line */
+      }
+
+      /* Provide a sensible default seat size in the top-main section but allow media queries
+         to override sizes on smaller screens so the whole row can become visible. */
+      #top-main-section .seats-horizontal .seat {
+        width: var(--seat-size);
+        height: var(--seat-size);
+        min-width: 10px; /* small fallback that media queries override */
+        flex: 0 0 auto; /* respects width/height, but allows media query sizing */
+        box-sizing: border-box;
       }
 
       /* Alternative layout styles */
@@ -606,6 +677,12 @@
           width: 100%;
           max-width: 500px;
         }
+        /* On smaller screens, remove scaling so the UI can center naturally */
+        .seatmap-container {
+          transform: none;
+          transform-origin: center;
+          width: 100%;
+        }
       }
 
       /* Cleaned up classes replacing inline styles */
@@ -615,50 +692,10 @@
         gap: 8px;
         padding: 4px;
         width: 100%;
-        min-width: unset;
-        position: relative;
-        will-change: transform;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        align-items: center;
-        justify-content: center;
-        transform: scale(0.7);
+        /* Scaling the whole UI to fit */
+        transform: scale(0.75);
         transform-origin: top center;
-        margin-bottom: 110px; /* Add space for footer */
-      }
-
-      /* Canvas container styles */
-      .seat-canvas {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border: 2px solid #cbd5e1;
-        border-radius: 18px;
-        padding: 24px 0 24px 0;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04),
-          inset 0 1px 0 rgba(255, 255, 255, 0.6);
         position: relative;
-        overflow: auto;
-        width: 100%;
-        max-width: 1280px;
-        margin: 0 auto;
-        height: 88vh;
-        cursor: grab;
-        /* Removed flex layout to restore pan/zoom functionality */
-        box-sizing: border-box;
-        scrollbar-width: thin;
-        scrollbar-color: #cbd5e1 #f8fafc;
-      }
-      .seat-canvas::-webkit-scrollbar {
-        height: 10px;
-        width: 10px;
-        background: #f8fafc;
-        border-radius: 8px;
-      }
-      .seat-canvas::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 8px;
-      }
-
-      .seat-canvas:active {
-        cursor: grabbing;
       }
 
       .seat-canvas:before {
@@ -699,7 +736,7 @@
       }
 
       #top-section {
-        width: 22%;
+        width: 400px;
         margin-bottom: 0;
       }
 
@@ -739,11 +776,12 @@
         text-align: center;
         font-size: 13px;
         color: #333;
-        padding: 3px 6px;
+        padding: 3px 50px;
         background: linear-gradient(135deg, #f8f9fa, #e9ecef);
         border: 1px solid #dee2e6;
         border-radius: 4px;
         display: inline-block;
+        white-space: nowrap; /* keep title text on a single line */
       }
 
       .btn-group {
@@ -753,271 +791,56 @@
         background: #999;
         margin-left: 8px;
       }
-
-      /* Zoom and Pan Controls */
-      .zoom-controls {
-        position: fixed;
-        bottom: 80px;
-        left: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 1000;
-      }
-
-      .zoom-btn {
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: #fff;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: all 0.2s ease;
-        color: #333;
-      }
-
-      .zoom-btn:hover {
-        background: #f5f5f5;
-        transform: scale(1.05);
-      }
-
-      .zoom-btn:active {
-        transform: scale(0.95);
-      }
-
-      .reset-btn {
-        width: 60px;
-        height: 30px;
-        border: none;
-        background: #ff6b6b;
-        color: white;
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 10px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: all 0.2s ease;
-      }
-
-      .reset-btn:hover {
-        background: #ee5a24;
-        transform: scale(1.05);
-      }
-
-      /* Pan Instructions */
-      .pan-instructions {
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 11px;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .pan-instructions.show {
-        opacity: 1;
-      }
-
-      /* Zoom and Pan Controls */
-      .zoom-controls {
-        position: fixed;
-        bottom: 80px;
-        left: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 1000;
-      }
-
-      .zoom-btn {
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: #fff;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: all 0.2s ease;
-        color: #333;
-      }
-
-      .zoom-btn:hover {
-        background: #f5f5f5;
-        transform: scale(1.05);
-      }
-
-      .zoom-btn:active {
-        transform: scale(0.95);
-      }
-
-      .reset-btn {
-        width: 60px;
-        height: 30px;
-        border: none;
-        background: #ff6b6b;
-        color: white;
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 10px;
-        font-weight: bold;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        transition: all 0.2s ease;
-      }
-
-      .reset-btn:hover {
-        background: #ee5a24;
-        transform: scale(1.05);
-      }
-
-      /* Pan Instructions */
-      .pan-instructions {
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 11px;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .pan-instructions.show {
-        opacity: 1;
-      }
-
-      /* Zoned Seat Layout Styles */
-      .zone-indicator {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: rgba(255, 107, 107, 0.8);
-        color: white;
-        font-size: 8px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        font-weight: bold;
-      }
-
-      .zone-vip .zone-indicator {
-        background: rgba(255, 152, 0, 0.8);
-      }
-
-      .zone-premium .zone-indicator {
-        background: rgba(156, 39, 176, 0.8);
-      }
-
-      .zone-regular .zone-indicator {
-        background: rgba(76, 175, 80, 0.8);
-      }
-
-      .price-tag {
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        font-size: 9px;
-        padding: 1px 3px;
-        border-radius: 2px;
-        position: absolute;
-        bottom: -8px;
-        left: 50%;
-        transform: translateX(-50%);
-        white-space: nowrap;
-        z-index: 10;
-      }
-
-      .seat {
-        position: relative;
-      }
-
-      .seat:hover .price-tag {
-        display: block;
-      }
-
-      .zone-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 5px;
-        font-size: 10px;
-      }
-
-      .zone-price {
-        color: #ff6b6b;
-        font-weight: bold;
-      }
-
-      .zone-capacity {
-        color: #666;
-      }
-
-      /* Performance optimizations */
-      * {
-        transform-style: preserve-3d;
-        backface-visibility: hidden;
-      }
-
-      .seat-canvas {
-        contain: layout style paint;
-        transform: translateZ(0);
-      }
-
-      .seatmap-container {
-        contain: layout style;
-        transform: translateZ(0);
-        overflow: auto;
-      }
-
-      .section {
-        contain: layout;
-      }
-
-      /* Remove unnecessary repaints */
-      .price-tag {
-        contain: layout style;
-        pointer-events: none;
-      }
-      .seat.selected {
-        background: #1976d2;
-        color: #fff;
-        outline: 2px solid #ff9800;
-        box-shadow: 0 0 8px #1976d2;
-        transform: scale(1.08);
-        transition: background 0.2s, outline 0.2s, transform 0.2s;
-      }
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="">
       <h1>Seat Selection — Static Replica</h1>
-     
+      
 
-      <!-- Removed duplicate Selected Seats Card -->
-
-      <div style="overflow-x: auto; width: 100vw">
-        <div
-          class="seatmap-container"
-          id="seatmapContainer"
-          style="width: max-content"
-        >
+      <div class="">
+        <div class="seatmap-container">
+          <!-- TOP-MAIN SECTION (Z-Z) -->
+          <div class="section section-left" id="top-main-section">
+            <div class="section-title">top main (Z-Z)</div>
+            <div class="top-horizontal1">
+              <!-- Row Z (top main placeholder) -->
+              <div class="row-horizontal">
+                <div class="row-label-left">Z</div>
+                <div class="seats-horizontal">
+                  <div class="seat orange" data-id="Z1-1"><span>1</span></div>
+                  <div class="seat orange" data-id="Z1-2"><span>2</span></div>
+                  <div class="seat orange" data-id="Z1-3"><span>3</span></div>
+                  <div class="seat orange" data-id="Z1-4"><span>4</span></div>
+                  <div class="seat orange" data-id="Z1-5"><span>5</span></div>
+                  <div class="seat orange" data-id="Z1-6"><span>6</span></div>
+                  <div class="seat orange" data-id="Z1-7"><span>7</span></div>
+                  <div class="seat orange" data-id="Z1-8"><span>8</span></div>
+                  <div class="seat orange" data-id="Z1-9"><span>9</span></div>
+                  <div class="seat orange" data-id="Z1-10"><span>10</span></div>
+                  <div class="seat orange" data-id="Z1-11"><span>11</span></div>
+                  <div class="seat orange" data-id="Z1-12"><span>12</span></div>
+                  <div class="seat orange" data-id="Z1-13"><span>13</span></div>
+                  <div class="seat orange" data-id="Z1-14"><span>14</span></div>
+                  <div class="seat orange" data-id="Z1-15"><span>15</span></div>
+                  <div class="seat orange" data-id="Z1-16"><span>16</span></div>
+                  <div class="seat orange" data-id="Z1-17"><span>17</span></div>
+                  <div class="seat orange" data-id="Z1-18"><span>18</span></div>
+                  <div class="seat orange" data-id="Z1-19"><span>19</span></div>
+                  <div class="seat orange" data-id="Z1-20"><span>20</span></div>
+                  <div class="seat orange" data-id="Z1-21"><span>21</span></div>
+                  <div class="seat orange" data-id="Z1-22"><span>22</span></div>
+                  <div class="seat orange" data-id="Z1-23"><span>23</span></div>
+                  <div class="seat orange" data-id="Z1-24"><span>24</span></div>
+                  <div class="seat orange" data-id="Z1-25"><span>25</span></div>
+                  <div class="seat orange" data-id="Z1-26"><span>26</span></div>
+                  <div class="row-label-left">Z</div>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- TOP-RIGHT SECTION (P to Y) -->
+
           <div
             style="
               display: flex;
@@ -1030,24 +853,37 @@
             <!-- TOP-LEFT1 SECTION (P to X) -->
             <div class="section section-left" id="top-left-section-1">
               <div class="section-title">top-left1(P → X)</div>
-
-              <div class="top-horizontal">
+              <div class="top-horizontal-alt">
                 <!-- Row X -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">X</div>
-                  <div class="seats-horizontal"></div>
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">X</div>
+                  <div class="seats-horizontal-alt">
+                    <div class="seat orange" data-id="X4-1">
+                      <span>1</span>
+                    </div>
+                    <div class="seat orange" data-id="X4-2">
+                      <span>2</span>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Row W -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">W</div>
-                  <div class="seats-horizontal"></div>
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">W</div>
+                  <div class="seats-horizontal-alt">
+                    <div class="seat orange" data-id="W4-1">
+                      <span>1</span>
+                    </div>
+                    <div class="seat orange" data-id="W4-2">
+                      <span>2</span>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Row V -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">V</div>
-                  <div class="seats-horizontal">
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">V</div>
+                  <div class="seats-horizontal-alt">
                     <div class="seat teal" data-id="V4-1"><span>1</span></div>
                     <div class="seat teal" data-id="V4-2"><span>2</span></div>
                     <div class="seat teal" data-id="V4-3"><span>3</span></div>
@@ -1055,9 +891,9 @@
                 </div>
 
                 <!-- Row U -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">U</div>
-                  <div class="seats-horizontal">
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">U</div>
+                  <div class="seats-horizontal-alt">
                     <div class="seat teal" data-id="U4-1"><span>1</span></div>
                     <div class="seat teal" data-id="U4-2"><span>2</span></div>
                     <div class="seat teal" data-id="U4-3"><span>3</span></div>
@@ -1067,9 +903,9 @@
                 </div>
 
                 <!-- Row T -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">T</div>
-                  <div class="seats-horizontal">
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">T</div>
+                  <div class="seats-horizontal-alt">
                     <div class="seat teal" data-id="T4-1"><span>1</span></div>
                     <div class="seat teal" data-id="T4-2"><span>2</span></div>
                     <div class="seat teal" data-id="T4-3"><span>3</span></div>
@@ -1080,9 +916,9 @@
                 </div>
 
                 <!-- Row S -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">S</div>
-                  <div class="seats-horizontal">
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">S</div>
+                  <div class="seats-horizontal-alt">
                     <div class="seat purple" data-id="S4-1"><span>1</span></div>
                     <div class="seat purple" data-id="S4-2"><span>2</span></div>
                     <div class="seat purple" data-id="S4-3"><span>3</span></div>
@@ -1095,9 +931,9 @@
                 </div>
 
                 <!-- Row R -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">R</div>
-                  <div class="seats-horizontal">
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">R</div>
+                  <div class="seats-horizontal-alt">
                     <div class="seat purple" data-id="R4-1"><span>1</span></div>
                     <div class="seat purple" data-id="R4-2"><span>2</span></div>
                     <div class="seat purple" data-id="R4-3"><span>3</span></div>
@@ -1111,9 +947,9 @@
                 </div>
 
                 <!-- Row Q -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">Q</div>
-                  <div class="seats-horizontal">
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">Q</div>
+                  <div class="seats-horizontal-alt">
                     <div class="seat purple" data-id="Q4-1"><span>1</span></div>
                     <div class="seat purple" data-id="Q4-2"><span>2</span></div>
                     <div class="seat purple" data-id="Q4-3"><span>3</span></div>
@@ -1130,9 +966,9 @@
                 </div>
 
                 <!-- Row P -->
-                <div class="row-horizontal">
-                  <div class="row-label-left">P</div>
-                  <div class="seats-horizontal">
+                <div class="row-horizontal-alt">
+                  <div class="row-label-left-alt">P</div>
+                  <div class="seats-horizontal-alt">
                     <div class="seat purple" data-id="P4-1"><span>1</span></div>
                     <div class="seat purple" data-id="P4-2"><span>2</span></div>
                     <div class="seat purple" data-id="P4-3"><span>3</span></div>
@@ -1466,6 +1302,15 @@
                     <div class="seat purple" data-id="P3-18">
                       <span>18</span>
                     </div>
+                    <div class="seat purple" data-id="P3-19">
+                      <span>19</span>
+                    </div>
+                    <div class="seat purple" data-id="P3-20">
+                      <span>20</span>
+                    </div>
+                    <div class="seat purple" data-id="P3-21">
+                      <span>21</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1529,12 +1374,6 @@
                 <div class="row-horizontal">
                   <div class="row-label-left">X</div>
                   <div class="seats-horizontal">
-                    <div class="seat orange" data-id="X2-15">
-                      <span>15</span>
-                    </div>
-                    <div class="seat orange" data-id="X2-16">
-                      <span>16</span>
-                    </div>
                     <div class="seat orange" data-id="X2-17">
                       <span>17</span>
                     </div>
@@ -1834,9 +1673,6 @@
                 <div class="row-horizontal">
                   <div class="row-label-left">P</div>
                   <div class="seats-horizontal">
-                    <div class="seat purple" data-id="P2-25">
-                      <span>25</span>
-                    </div>
                     <div class="seat purple" data-id="P2-26">
                       <span>26</span>
                     </div>
@@ -2075,6 +1911,18 @@
                     </div>
                     <div class="seat purple" data-id="P-42">
                       <span>42</span>
+                    </div>
+                    <div class="seat purple" data-id="P-43">
+                      <span>43</span>
+                    </div>
+                    <div class="seat purple" data-id="P-44">
+                      <span>44</span>
+                    </div>
+                    <div class="seat purple" data-id="P-45">
+                      <span>45</span>
+                    </div>
+                    <div class="seat purple" data-id="P-46">
+                      <span>46</span>
                     </div>
                   </div>
                 </div>
@@ -2782,7 +2630,7 @@
                     <div class="seat blue" data-id="G-4"><span>4</span></div>
                     <div class="seat blue" data-id="G-5"><span>5</span></div>
                     <div class="seat blue" data-id="G-6"><span>6</span></div>
-                    <div class="seat blue reserved" data-id="G-7">
+                    <div class="seat blue" data-id="G-7">
                       <span>7</span>
                     </div>
                     <div class="seat blue" data-id="G-8"><span>8</span></div>
@@ -2799,7 +2647,7 @@
                   <div class="seats-horizontal">
                     <div class="seat blue" data-id="F-1"><span>1</span></div>
                     <div class="seat blue" data-id="F-2"><span>2</span></div>
-                    <div class="seat blue reserved" data-id="F-3">
+                    <div class="seat blue" data-id="F-3">
                       <span>3</span>
                     </div>
                     <div class="seat blue" data-id="F-4"><span>4</span></div>
@@ -2823,7 +2671,7 @@
                     <div class="seat blue" data-id="E-3"><span>3</span></div>
                     <div class="seat blue" data-id="E-4"><span>4</span></div>
                     <div class="seat blue" data-id="E-5"><span>5</span></div>
-                    <div class="seat blue reserved" data-id="E-6">
+                    <div class="seat blue" data-id="E-6">
                       <span>6</span>
                     </div>
                     <div class="seat blue" data-id="E-7"><span>7</span></div>
@@ -2863,7 +2711,7 @@
                     <div class="seat blue" data-id="C-3"><span>3</span></div>
                     <div class="seat blue" data-id="C-4"><span>4</span></div>
                     <div class="seat blue" data-id="C-5"><span>5</span></div>
-                    <div class="seat blue reserved" data-id="C-6">
+                    <div class="seat blue" data-id="C-6">
                       <span>6</span>
                     </div>
                     <div class="seat blue" data-id="C-7"><span>7</span></div>
@@ -2881,7 +2729,7 @@
                   <div class="seats-horizontal">
                     <div class="seat pink" data-id="B-1"><span>1</span></div>
                     <div class="seat pink" data-id="B-2"><span>2</span></div>
-                    <div class="seat pink reserved" data-id="B-3">
+                    <div class="seat pink" data-id="B-3">
                       <span>3</span>
                     </div>
                     <div class="seat pink" data-id="B-4"><span>4</span></div>
@@ -2904,7 +2752,7 @@
                     <div class="seat pink" data-id="A-2"><span>2</span></div>
                     <div class="seat pink" data-id="A-3"><span>3</span></div>
                     <div class="seat pink" data-id="A-4"><span>4</span></div>
-                    <div class="seat pink reserved" data-id="A-5">
+                    <div class="seat pink" data-id="A-5">
                       <span>5</span>
                     </div>
                     <div class="seat pink" data-id="A-6"><span>6</span></div>
@@ -2925,7 +2773,7 @@
                     <div class="seat purple" data-id="BB-2"><span>2</span></div>
                     <div class="seat purple" data-id="BB-3"><span>3</span></div>
                     <div class="seat purple" data-id="BB-4"><span>4</span></div>
-                    <div class="seat purple reserved" data-id="BB-5">
+                    <div class="seat purple" data-id="BB-5">
                       <span>5</span>
                     </div>
                     <div class="seat purple" data-id="BB-6"><span>6</span></div>
@@ -2951,7 +2799,7 @@
                     <div class="seat purple" data-id="AA-1"><span>1</span></div>
                     <div class="seat purple" data-id="AA-2"><span>2</span></div>
                     <div class="seat purple" data-id="AA-3"><span>3</span></div>
-                    <div class="seat purple reserved" data-id="AA-4">
+                    <div class="seat purple" data-id="AA-4">
                       <span>4</span>
                     </div>
                     <div class="seat purple" data-id="AA-5"><span>5</span></div>
@@ -3335,43 +3183,43 @@
                   </div>
 
                   <!-- Row BB Block -->
-                  <div class="row-horizontal-alt">
-                    <div class="row-label-left-alt">BB</div>
-                    <div class="seats-horizontal-alt">
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>3</span>
-                      </div>
-                      <div class="seat blue reserved" data-id="F-3">
-                        <span>23</span>
-                      </div>
-                    </div>
-                    <div class="row-label-right-alt">BB</div>
-                  </div>
-
+         
+<div class="row-horizontal-alt">
+  <div class="row-label-left-alt">BB</div>
+  <div class="seats-horizontal-alt">
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+    <div class="seat blue reserved" data-id="F-3">
+      <span>3</span>
+    </div>
+  </div>
+  <div class="row-label-right-alt">BB</div>
+</div>
                   <!-- Row AA Block -->
                   <div class="row-horizontal-alt">
                     <div class="row-label-left-alt">AA</div>
@@ -3430,7 +3278,7 @@
                     <div class="seat blue" data-id="GR-4"><span>33</span></div>
                     <div class="seat blue" data-id="GR-5"><span>34</span></div>
                     <div class="seat blue" data-id="GR-6"><span>35</span></div>
-                    <div class="seat blue reserved" data-id="GR-7">
+                    <div class="seat blue" data-id="GR-7">
                       <span>36</span>
                     </div>
                     <div class="seat blue" data-id="GR-8"><span>37</span></div>
@@ -3445,20 +3293,20 @@
                 <!-- Row F -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat blue" data-id="FR-1"><span>30</span></div>
-                    <div class="seat blue" data-id="FR-2"><span>31</span></div>
-                    <div class="seat blue reserved" data-id="FR-3">
-                      <span>32</span>
+                    <div class="seat blue" data-id="FR-1"><span>29</span></div>
+                    <div class="seat blue" data-id="FR-2"><span>30</span></div>
+                    <div class="seat blue" data-id="FR-3">
+                      <span>31</span>
                     </div>
-                    <div class="seat blue" data-id="FR-4"><span>33</span></div>
-                    <div class="seat blue" data-id="FR-5"><span>34</span></div>
-                    <div class="seat blue" data-id="FR-6"><span>35</span></div>
-                    <div class="seat blue" data-id="FR-7"><span>36</span></div>
-                    <div class="seat blue" data-id="FR-8"><span>37</span></div>
-                    <div class="seat blue" data-id="FR-9"><span>38</span></div>
-                    <div class="seat blue" data-id="FR-10"><span>39</span></div>
-                    <div class="seat blue" data-id="FR-11"><span>40</span></div>
-                    <div class="seat blue" data-id="FR-12"><span>41</span></div>
+                    <div class="seat blue" data-id="FR-4"><span>32</span></div>
+                    <div class="seat blue" data-id="FR-5"><span>33</span></div>
+                    <div class="seat blue" data-id="FR-6"><span>34</span></div>
+                    <div class="seat blue" data-id="FR-7"><span>35</span></div>
+                    <div class="seat blue" data-id="FR-8"><span>36</span></div>
+                    <div class="seat blue" data-id="FR-9"><span>37</span></div>
+                    <div class="seat blue" data-id="FR-10"><span>38</span></div>
+                    <div class="seat blue" data-id="FR-11"><span>39</span></div>
+                    <div class="seat blue" data-id="FR-12"><span>40</span></div>
                   </div>
                   <div class="row-label-left">F</div>
                 </div>
@@ -3466,20 +3314,20 @@
                 <!-- Row E -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat blue" data-id="ER-1"><span>30</span></div>
-                    <div class="seat blue" data-id="ER-2"><span>31</span></div>
-                    <div class="seat blue" data-id="ER-3"><span>32</span></div>
-                    <div class="seat blue" data-id="ER-4"><span>33</span></div>
-                    <div class="seat blue" data-id="ER-5"><span>34</span></div>
-                    <div class="seat blue reserved" data-id="ER-6">
-                      <span>35</span>
+                    <div class="seat blue" data-id="ER-1"><span>28</span></div>
+                    <div class="seat blue" data-id="ER-2"><span>29</span></div>
+                    <div class="seat blue" data-id="ER-3"><span>30</span></div>
+                    <div class="seat blue" data-id="ER-4"><span>31</span></div>
+                    <div class="seat blue" data-id="ER-5"><span>32</span></div>
+                    <div class="seat blue" data-id="ER-6">
+                      <span>33</span>
                     </div>
-                    <div class="seat blue" data-id="ER-7"><span>36</span></div>
-                    <div class="seat blue" data-id="ER-8"><span>37</span></div>
-                    <div class="seat blue" data-id="ER-9"><span>38</span></div>
-                    <div class="seat blue" data-id="ER-10"><span>39</span></div>
-                    <div class="seat blue" data-id="ER-11"><span>40</span></div>
-                    <div class="seat blue" data-id="ER-12"><span>41</span></div>
+                    <div class="seat blue" data-id="ER-7"><span>34</span></div>
+                    <div class="seat blue" data-id="ER-8"><span>35</span></div>
+                    <div class="seat blue" data-id="ER-9"><span>36</span></div>
+                    <div class="seat blue" data-id="ER-10"><span>37</span></div>
+                    <div class="seat blue" data-id="ER-11"><span>38</span></div>
+                    <div class="seat blue" data-id="ER-12"><span>39</span></div>
                   </div>
                   <div class="row-label-left">E</div>
                 </div>
@@ -3487,18 +3335,18 @@
                 <!-- Row D -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat blue" data-id="DR-1"><span>30</span></div>
-                    <div class="seat blue" data-id="DR-2"><span>31</span></div>
-                    <div class="seat blue" data-id="DR-3"><span>32</span></div>
-                    <div class="seat blue" data-id="DR-4"><span>33</span></div>
-                    <div class="seat blue" data-id="DR-5"><span>34</span></div>
-                    <div class="seat blue" data-id="DR-6"><span>35</span></div>
-                    <div class="seat blue" data-id="DR-7"><span>36</span></div>
-                    <div class="seat blue" data-id="DR-8"><span>37</span></div>
-                    <div class="seat blue" data-id="DR-9"><span>38</span></div>
-                    <div class="seat blue" data-id="DR-10"><span>39</span></div>
-                    <div class="seat blue" data-id="DR-11"><span>40</span></div>
-                    <div class="seat blue" data-id="DR-12"><span>41</span></div>
+                    <div class="seat blue" data-id="DR-1"><span>27</span></div>
+                    <div class="seat blue" data-id="DR-2"><span>28</span></div>
+                    <div class="seat blue" data-id="DR-3"><span>29</span></div>
+                    <div class="seat blue" data-id="DR-4"><span>30</span></div>
+                    <div class="seat blue" data-id="DR-5"><span>31</span></div>
+                    <div class="seat blue" data-id="DR-6"><span>32</span></div>
+                    <div class="seat blue" data-id="DR-7"><span>33</span></div>
+                    <div class="seat blue" data-id="DR-8"><span>34</span></div>
+                    <div class="seat blue" data-id="DR-9"><span>35</span></div>
+                    <div class="seat blue" data-id="DR-10"><span>36</span></div>
+                    <div class="seat blue" data-id="DR-11"><span>37</span></div>
+                    <div class="seat blue" data-id="DR-12"><span>38</span></div>
                   </div>
                   <div class="row-label-left">D</div>
                 </div>
@@ -3506,20 +3354,20 @@
                 <!-- Row C -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat blue" data-id="CR-1"><span>30</span></div>
-                    <div class="seat blue" data-id="CR-2"><span>31</span></div>
-                    <div class="seat blue" data-id="CR-3"><span>32</span></div>
-                    <div class="seat blue" data-id="CR-4"><span>33</span></div>
-                    <div class="seat blue" data-id="CR-5"><span>34</span></div>
-                    <div class="seat blue reserved" data-id="CR-6">
-                      <span>35</span>
+                    <div class="seat blue" data-id="CR-1"><span>26</span></div>
+                    <div class="seat blue" data-id="CR-2"><span>27</span></div>
+                    <div class="seat blue" data-id="CR-3"><span>28</span></div>
+                    <div class="seat blue" data-id="CR-4"><span>29</span></div>
+                    <div class="seat blue" data-id="CR-5"><span>30</span></div>
+                    <div class="seat blue" data-id="CR-6">
+                      <span>31</span>
                     </div>
-                    <div class="seat blue" data-id="CR-7"><span>36</span></div>
-                    <div class="seat blue" data-id="CR-8"><span>37</span></div>
-                    <div class="seat blue" data-id="CR-9"><span>38</span></div>
-                    <div class="seat blue" data-id="CR-10"><span>39</span></div>
-                    <div class="seat blue" data-id="CR-11"><span>40</span></div>
-                    <div class="seat blue" data-id="CR-12"><span>41</span></div>
+                    <div class="seat blue" data-id="CR-7"><span>32</span></div>
+                    <div class="seat blue" data-id="CR-8"><span>33</span></div>
+                    <div class="seat blue" data-id="CR-9"><span>34</span></div>
+                    <div class="seat blue" data-id="CR-10"><span>35</span></div>
+                    <div class="seat blue" data-id="CR-11"><span>36</span></div>
+                    <div class="seat blue" data-id="CR-12"><span>37</span></div>
                   </div>
                   <div class="row-label-left">C</div>
                 </div>
@@ -3527,20 +3375,20 @@
                 <!-- Row B Block -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat pink" data-id="BR-1"><span>30</span></div>
-                    <div class="seat pink" data-id="BR-2"><span>31</span></div>
-                    <div class="seat pink reserved" data-id="BR-3">
-                      <span>32</span>
+                    <div class="seat pink" data-id="BR-1"><span>26</span></div>
+                    <div class="seat pink" data-id="BR-2"><span>27</span></div>
+                    <div class="seat pink" data-id="BR-3">
+                      <span>28</span>
                     </div>
-                    <div class="seat pink" data-id="BR-4"><span>33</span></div>
-                    <div class="seat pink" data-id="BR-5"><span>34</span></div>
-                    <div class="seat pink" data-id="BR-6"><span>35</span></div>
-                    <div class="seat pink" data-id="BR-7"><span>36</span></div>
-                    <div class="seat pink" data-id="BR-8"><span>37</span></div>
-                    <div class="seat pink" data-id="BR-9"><span>38</span></div>
-                    <div class="seat pink" data-id="BR-10"><span>39</span></div>
-                    <div class="seat pink" data-id="BR-11"><span>40</span></div>
-                    <div class="seat pink" data-id="BR-12"><span>41</span></div>
+                    <div class="seat pink" data-id="BR-4"><span>29</span></div>
+                    <div class="seat pink" data-id="BR-5"><span>30</span></div>
+                    <div class="seat pink" data-id="BR-6"><span>31</span></div>
+                    <div class="seat pink" data-id="BR-7"><span>32</span></div>
+                    <div class="seat pink" data-id="BR-8"><span>33</span></div>
+                    <div class="seat pink" data-id="BR-9"><span>34</span></div>
+                    <div class="seat pink" data-id="BR-10"><span>35</span></div>
+                    <div class="seat pink" data-id="BR-11"><span>36</span></div>
+                    <div class="seat pink" data-id="BR-12"><span>37</span></div>
                   </div>
                   <div class="row-label-left">B</div>
                 </div>
@@ -3548,20 +3396,20 @@
                 <!-- Row A Block -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat pink" data-id="AR-1"><span>30</span></div>
-                    <div class="seat pink" data-id="AR-2"><span>31</span></div>
-                    <div class="seat pink" data-id="AR-3"><span>32</span></div>
-                    <div class="seat pink" data-id="AR-4"><span>33</span></div>
-                    <div class="seat pink reserved" data-id="AR-5">
-                      <span>34</span>
+                    <div class="seat pink" data-id="AR-1"><span>25</span></div>
+                    <div class="seat pink" data-id="AR-2"><span>26</span></div>
+                    <div class="seat pink" data-id="AR-3"><span>27</span></div>
+                    <div class="seat pink" data-id="AR-4"><span>28</span></div>
+                    <div class="seat pink" data-id="AR-5">
+                      <span>29</span>
                     </div>
-                    <div class="seat pink" data-id="AR-6"><span>35</span></div>
-                    <div class="seat pink" data-id="AR-7"><span>36</span></div>
-                    <div class="seat pink" data-id="AR-8"><span>37</span></div>
-                    <div class="seat pink" data-id="AR-9"><span>38</span></div>
-                    <div class="seat pink" data-id="AR-10"><span>39</span></div>
-                    <div class="seat pink" data-id="AR-11"><span>40</span></div>
-                    <div class="seat pink" data-id="AR-12"><span>41</span></div>
+                    <div class="seat pink" data-id="AR-6"><span>30</span></div>
+                    <div class="seat pink" data-id="AR-7"><span>31</span></div>
+                    <div class="seat pink" data-id="AR-8"><span>32</span></div>
+                    <div class="seat pink" data-id="AR-9"><span>33</span></div>
+                    <div class="seat pink" data-id="AR-10"><span>34</span></div>
+                    <div class="seat pink" data-id="AR-11"><span>35</span></div>
+                    <div class="seat pink" data-id="AR-12"><span>36</span></div>
                   </div>
                   <div class="row-label-left">A</div>
                 </div>
@@ -3570,40 +3418,40 @@
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
                     <div class="seat purple" data-id="BBR-1">
-                      <span>30</span>
+                      <span>25</span>
                     </div>
                     <div class="seat purple" data-id="BBR-2">
-                      <span>31</span>
+                      <span>26</span>
                     </div>
                     <div class="seat purple" data-id="BBR-3">
-                      <span>32</span>
+                      <span>27</span>
                     </div>
                     <div class="seat purple" data-id="BBR-4">
-                      <span>33</span>
+                      <span>28</span>
                     </div>
-                    <div class="seat purple reserved" data-id="BBR-5">
-                      <span>34</span>
+                    <div class="seat purple" data-id="BBR-5">
+                      <span>29</span>
                     </div>
                     <div class="seat purple" data-id="BBR-6">
-                      <span>35</span>
+                      <span>30</span>
                     </div>
                     <div class="seat purple" data-id="BBR-7">
-                      <span>36</span>
+                      <span>31</span>
                     </div>
                     <div class="seat purple" data-id="BBR-8">
-                      <span>37</span>
+                      <span>32</span>
                     </div>
                     <div class="seat purple" data-id="BBR-9">
-                      <span>38</span>
+                      <span>33</span>
                     </div>
                     <div class="seat purple" data-id="BBR-10">
-                      <span>39</span>
+                      <span>34</span>
                     </div>
                     <div class="seat purple" data-id="BBR-11">
-                      <span>40</span>
+                      <span>35</span>
                     </div>
                     <div class="seat purple" data-id="BBR-12">
-                      <span>41</span>
+                      <span>36</span>
                     </div>
                   </div>
                   <div class="row-label-left">BB</div>
@@ -3613,40 +3461,40 @@
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
                     <div class="seat purple" data-id="AAR-1">
-                      <span>30</span>
+                      <span>24</span>
                     </div>
                     <div class="seat purple" data-id="AAR-2">
-                      <span>31</span>
+                      <span>25</span>
                     </div>
                     <div class="seat purple" data-id="AAR-3">
-                      <span>32</span>
+                      <span>26</span>
                     </div>
-                    <div class="seat purple reserved" data-id="AAR-4">
-                      <span>33</span>
+                    <div class="seat purple" data-id="AAR-4">
+                      <span>27</span>
                     </div>
                     <div class="seat purple" data-id="AAR-5">
-                      <span>34</span>
+                      <span>28</span>
                     </div>
                     <div class="seat purple" data-id="AAR-6">
-                      <span>35</span>
+                      <span>29</span>
                     </div>
                     <div class="seat purple" data-id="AAR-7">
-                      <span>36</span>
+                      <span>30</span>
                     </div>
                     <div class="seat purple" data-id="AAR-8">
-                      <span>37</span>
+                      <span>31</span>
                     </div>
                     <div class="seat purple" data-id="AAR-9">
-                      <span>38</span>
+                      <span>32</span>
                     </div>
                     <div class="seat purple" data-id="AAR-10">
-                      <span>39</span>
+                      <span>33</span>
                     </div>
                     <div class="seat purple" data-id="AAR-11">
-                      <span>40</span>
+                      <span>34</span>
                     </div>
                     <div class="seat purple" data-id="AAR-12">
-                      <span>41</span>
+                      <span>35</span>
                     </div>
                   </div>
                   <div class="row-label-left">AA</div>
@@ -3654,740 +3502,84 @@
               </div>
             </div>
 
-            
-
-            <!-- Duplicate right-side summary card removed as requested -->
+            <div class="summary section-right">
+              <form id="seatForm" method="post" action="/seats/">
+                {% csrf_token %}
+                <div>
+                  <strong>Selected seats:</strong>
+                  <span id="selected-list">None</span>
+                </div>
+                <input type="hidden" name="selected_seats" id="selectedSeatsInput" />
+                <div class="btn-group">
+                  <button class="btn" type="submit" id="confirmBtn">Confirm Selection</button>
+                  <button id="clearBtn" class="btn btn-secondary" type="button">Clear</button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-     <div class="screen">SCREEN</div>
-    <!-- Zoom and Pan Controls removed per user request (no drag/zoom)
-    Controls were intentionally removed to keep seat selection simple. -->
 
-    <!-- Floating Card-Style Summary Popup -->
-    <!-- Move summary popup into footerPayPopup -->
-    <!-- Optimized Fixed Footer Popup -->
-    <div
-      id=""
-      class=""
-      style="display: flex; justify-content: flex-start; align-items: center"
-    >
-      <div
-        id="summaryPopup"
-        class="summary-popup"
-        style="
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          margin: 10px;
-          background: #fff;
-          box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-          border-radius: 10px;
-          padding: 18px 20px 16px 20px;
-          min-width: 260px;
-          max-width: 350px;
-        "
-      >
-        <div class="summary-popup-content">
-          <div class="summary-popup-title">Selected Seats:</div>
-          <div id="summaryPopupList" class="summary-popup-list" style="display: flex; flex-wrap: wrap; gap: 8px; font-weight: 600;">None</div>
-          <div class="summary-popup-total">
-            Total: <span id="summaryPopupCount">0</span> seats
-          </div>
-          <div class="summary-popup-actions">
-              <button class="summary-popup-btn" id="summaryConfirmBtn">
-                Confirm Booking
-              </button>
-              <button class="summary-popup-btn secondary" id="summaryClearBtn">
-                Clear All
-              </button>
-          </div>
-          <!-- Payment Modal -->
-          <div id="paymentModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:3000; justify-content:center; align-items:center;">
-            <div style="background:#fff; padding:32px 24px; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.18); display:flex; flex-direction:column; align-items:center; min-width:320px;">
-              <h2 style="margin-bottom:16px; color:#1976d2;">Payment Information</h2>
-              <p style="font-size:18px; margin-bottom:12px;">WhatsApp Number: <b style="color:#388e3c;">+91 98765 43210</b></p>
-              <img src="https://api.qrserver.com/v1/create-qr-code/?data=whatsapp:+919876543210&size=180x180" alt="QR Code" style="margin-bottom:18px; border-radius:8px;" />
-              <p style="font-size:15px; color:#555; margin-bottom:18px;">Scan the QR code to pay via WhatsApp or UPI.</p>
-              <button id="closePaymentModal" style="background:#e53935; color:#fff; border:none; border-radius:8px; padding:10px 32px; font-size:16px; cursor:pointer;">Close</button>
-            </div>
-          </div>
-          </div>
-        </div>
-
-      
-    <style>
-      .summary-popup {
-        position: fixed;
-        left: 50%;
-        bottom: 90px;
-        transform: translateX(-50%);
-        background: #fff;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
-        border-radius: 12px;
-        z-index: 3000;
-        min-width: 260px;
-        max-width: 340px;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border: 1px solid #e6e9f2;
-        animation: fadeInUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateX(-50%) translateY(40px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(-50%) translateY(0);
-        }
-      }
-      .summary-popup-content {
-        width: 100%;
-        padding: 18px 18px 14px 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .summary-popup-title {
-        color: #e53935;
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 2px;
-      }
-      .summary-popup-list {
-        color: #e53935;
-        font-size: 15px;
-        font-weight: 500;
-        margin-bottom: 6px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .summary-popup-total {
-        font-size: 15px;
-        color: #333;
-        margin-bottom: 8px;
-        border-top: 1px solid #eee;
-        padding-top: 8px;
-      }
-      .summary-popup-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 2px;
-      }
-      .summary-popup-btn {
-        background: #0b63ff;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        font-size: 15px;
-        font-weight: 600;
-        padding: 7px 18px;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(11, 99, 255, 0.1);
-        transition: background 0.18s;
-      }
-      .summary-popup-btn.secondary {
-        background: #999;
-        color: #fff;
-      }
-      .summary-popup-btn:hover {
-        background: #0846b3;
-      }
-      .summary-popup-btn.secondary:hover {
-        background: #666;
-      }
-    </style>
+    <div class="screen">SCREEN</div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".seat").forEach(function (seatEl) {
-          seatEl.addEventListener("click", function (ev) {
-            if (ev.__seatHandled) return; // skip if already handled by container
-            if (seatEl.classList.contains("reserved")) return;
-            const seatId = seatEl.dataset.id;
-            if (seatEl.classList.contains("selected")) {
-              seatEl.classList.remove("selected");
-              seatEl.setAttribute("aria-selected", "false");
-              selectedSeats = selectedSeats.filter((s) => s.id !== seatId);
-            } else {
-              if (selectedSeats.length >= MAX_SELECT) return;
-              seatEl.classList.add("selected");
-              seatEl.setAttribute("aria-selected", "true");
-              selectedSeats.push({
-                id: seatId,
-                price: parseInt(seatEl.dataset.price) || 200,
-                zone: seatEl.dataset.zone || "REGULAR",
-                sectionId: seatEl.dataset.sectionId || "unknown",
-                element: seatEl,
-              });
-            }
-            updateSummary();
-            ev.__seatHandled = true;
-            updateSummaryPopup();
-
-          });
-          // Add keyboard support
-          seatEl.addEventListener("keydown", function (ev) {
-            if (ev.key === "Enter" || ev.key === " ") {
-              ev.preventDefault();
-              seatEl.click();
-            }
-          });
-        });
-      });
-      // Summary popup logic
-      const summaryPopup = document.getElementById("summaryPopup");
-      const summaryPopupList = document.getElementById("summaryPopupList");
-      const summaryPopupCount = document.getElementById("summaryPopupCount");
-      const summaryConfirmBtn = document.getElementById("summaryConfirmBtn");
-      const summaryClearBtn = document.getElementById("summaryClearBtn");
-
-      // Make summaryPopup draggable
-      (function() {
-        const popup = document.getElementById('summaryPopup');
-        let isDragging = false, startX = 0, startY = 0, origX = 0, origY = 0;
-        if (popup) {
-          popup.style.position = 'fixed';
-          popup.style.cursor = 'move';
-          popup.addEventListener('mousedown', function(e) {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            origX = popup.offsetLeft;
-            origY = popup.offsetTop;
-            popup.style.zIndex = 9999;
-            document.body.style.userSelect = 'none';
-          });
-          document.addEventListener('mousemove', function(e) {
-            if (isDragging) {
-              let dx = e.clientX - startX;
-              let dy = e.clientY - startY;
-              popup.style.left = (origX + dx) + 'px';
-              popup.style.top = (origY + dy) + 'px';
-            }
-          });
-          document.addEventListener('mouseup', function() {
-            isDragging = false;
-            document.body.style.userSelect = '';
-          });
-        }
-      })();
-
-      function updateSummaryPopup() {
-        // Always show summary popup for debugging
-        summaryPopup.style.display = "flex";
-        let seatList = selectedSeats.map((seat) => `<span style='background:#e3f2fd;color:#1976d2;border-radius:4px;padding:2px 10px;margin-right:0;font-size:16px;'>${getSeatDisplay(seat)}</span>`);
-        summaryPopupList.innerHTML = seatList.length
-          ? seatList.join("")
-          : "None";
-        summaryPopupCount.textContent = selectedSeats.length;
-        // Debug: log selectedSeats to console
-        console.log("Selected seats:", selectedSeats);
-      }
-
-      summaryConfirmBtn.addEventListener("click", () => {
-        if (selectedSeats.length === 0) {
-          alert("Please select at least one seat.");
-          return;
-        }
-        // AJAX booking logic
-        const seatIds = selectedSeats.map((seat) => seat.id);
-        fetch(window.location.pathname, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-            "X-CSRFToken": getCookie("csrftoken"),
-          },
-          body: JSON.stringify({ selected_seats: seatIds }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              // Optionally, update UI to mark booked seats
-              data.booked.forEach((id) => {
-                const seatEl = document.querySelector(`[data-id='${id}']`);
-                if (seatEl) seatEl.classList.add("reserved");
-              });
-              selectedSeats = [];
-              updateSummary();
-              updateSummaryPopup();
-              // Redirect to payment page
-              window.location.href = "/payment/";
-            } else {
-              // Optionally show error in UI, but do not alert
-              // You can display an error message in the summary popup if needed
-            }
-          })
-          .catch(() => {
-            // Optionally show error in UI, but do not alert
-            // You can display an error message in the summary popup if needed
-          });
-      });
-
-      // CSRF helper for Django
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-          const cookies = document.cookie.split(";");
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === name + "=") {
-              cookieValue = decodeURIComponent(
-                cookie.substring(name.length + 1)
-              );
-              break;
-            }
-          }
-        }
-        return cookieValue;
-      }
-
-      summaryClearBtn.addEventListener("click", () => {
-        document
-          .querySelectorAll(".seat.selected")
-          .forEach((s) => s.classList.remove("selected"));
-        selectedSeats = [];
-        totalAmount = 0;
-        updateSummary();
-      });
-      // Wire up right-card confirm/clear handlers
-      // Seat selection with zoom/pan functionality
+      // Basic seat selection logic (static replica)
       const seats = document.querySelectorAll(".seat");
-      // Use actual summary card elements only
       const selectedListEl = document.getElementById("selected-list");
       const confirmBtn = document.getElementById("confirmBtn");
       const clearBtn = document.getElementById("clearBtn");
-      const seatmapContainer = document.getElementById("seatmapContainer");
-      const seatCanvas = seatmapContainer; // alias for compatibility with previous canvas-based code
-      // Zoom & pan controls removed per user request
 
-      const MAX_SELECT = 10; // Maximum seats allowed
-
-      // Re-wire right-card confirm/clear to use popup handlers (after DOM variables are known)
-      if (confirmBtn) {
-        summaryConfirmBtn.addEventListener("click", () => {
-          if (selectedSeats.length === 0) {
-            alert("Please select at least one seat.");
-            return;
-          }
-          // Redirect to payment page
-          window.location.href = "/payment/";
-          // Optionally, continue with booking logic (AJAX etc.)
-        });
-
-        document.getElementById("closePaymentModal").addEventListener("click", () => {
-          document.getElementById("paymentModal").style.display = "none";
-        });
-      }
-
-      function zoomOut() {
-        // Zoom disabled per user request
-        return;
-      }
-
-      function resetView() {
-        // Reset view disabled per user request
-        return;
-      }
-
-      // Wheel zoom disabled per user request (no scroll to zoom)
-
-      // Mouse drag pan disabled per user request (no drag-to-pan)
-
-      // Touch zoom/pan disabled per user request (no touch pinch-to-zoom or drag).
-
-      // Button event listeners removed (zoom/pan disabled)
-
-      // Zone Configuration
-      const zoneConfig = {
-        "top-left-section-1": { zone: "VIP", price: 500, color: "#ff9800" },
-        "top-left-section-2": { zone: "VIP", price: 500, color: "#ff9800" },
-        "top-right-section-2": { zone: "VIP", price: 500, color: "#ff9800" },
-        "top-right-section": { zone: "VIP", price: 500, color: "#ff9800" },
-        "top-section": { zone: "PREMIUM", price: 300, color: "#9c27b0" },
-        "top-section-2": { zone: "PREMIUM", price: 300, color: "#9c27b0" },
-        "top-section-3": { zone: "PREMIUM", price: 300, color: "#9c27b0" },
-        "top-section-4": { zone: "PREMIUM", price: 300, color: "#9c27b0" },
-        "left-section": { zone: "REGULAR", price: 200, color: "#4caf50" },
-        "mid-section": { zone: "REGULAR", price: 200, color: "#4caf50" },
-        "right-section": { zone: "REGULAR", price: 200, color: "#4caf50" },
-      };
-
-      let selectedSeats = [];
-      let totalAmount = 0;
-
-      // Initialize Zoned Layout
-      function initializeZones() {
-        const sections = document.querySelectorAll(".section, .section1");
-
-        sections.forEach((section) => {
-          const sectionId = section.id;
-          const config = zoneConfig[sectionId];
-
-          if (config) {
-            // Add zone indicator
-            const zoneIndicator = document.createElement("div");
-            zoneIndicator.className = `zone-indicator zone-${config.zone.toLowerCase()}`;
-            zoneIndicator.textContent = config.zone;
-            section.style.position = "relative";
-            section.appendChild(zoneIndicator);
-
-            // Add zone info to section title
-            const sectionTitle = section.querySelector(".section-title");
-            if (sectionTitle) {
-              const zoneInfo = document.createElement("div");
-              zoneInfo.className = "zone-info";
-              zoneInfo.innerHTML = `
-                <span class="zone-price">₹${config.price}</span>
-                <span class="zone-capacity">${
-                  section.querySelectorAll(".seat").length
-                } seats</span>
-              `;
-              sectionTitle.parentNode.insertBefore(
-                zoneInfo,
-                sectionTitle.nextSibling
-              );
-            }
-
-            // Add price tags to seats
-            const sectionSeats = section.querySelectorAll(".seat");
-            sectionSeats.forEach((seat) => {
-              seat.dataset.price = config.price;
-              seat.dataset.zone = config.zone;
-              seat.dataset.sectionId = sectionId;
-
-              // Accessibility: make seats focusable and keyboard-selectable
-              seat.setAttribute("tabindex", "0");
-              seat.setAttribute("role", "button");
-              seat.style.cursor = "pointer";
-
-              // Removed price tag creation
-            });
-          }
-        });
-      }
+      const MAX_SELECT = 6; // optional: max seats allowed to select
 
       function getSelected() {
-        return selectedSeats;
+        return Array.from(document.querySelectorAll(".seat.selected")).map(
+          (s) => s.dataset.id
+        );
       }
-
-      // Helper: build user-friendly display label for a seat
-      // (old simple getSeatDisplay removed) - robust one exists later
-
-      // (duplicate updateSummaryPopup removed; original retained earlier)
-
-      // Helper: get display name for a seat from its element or fallback to id
-      function getSeatDisplay(seat) {
-        if (!seat) return "";
-        try {
-          const el = seat.element;
-          if (el) {
-            const parentRow =
-              el.closest(".row-horizontal") ||
-              el.closest(".row") ||
-              el.closest(".row-horizontal-alt");
-            const rowLabel = parentRow
-              ? parentRow.querySelector(
-                  ".row-label-left, .row-label-left-alt, .row-label"
-                )
-              : null;
-            const rowText = rowLabel ? rowLabel.textContent.trim() : null;
-            const span = el.querySelector("span");
-            const num = span ? span.textContent.trim() : null;
-            if (rowText && num) return `${rowText}-${num}`;
-          }
-        } catch (e) {
-          // ignore
-        }
-        return seat.id || "";
-      }
-
-      // Summary updater - update selected-list, summary popup and footer
       function updateSummary() {
-        let summaryHTML = "<span>None</span>";
-        if (selectedSeats.length > 0) {
-          const seatList = selectedSeats.map(
-            (seat) => `<span>${getSeatDisplay(seat)}</span>`
-          );
-          summaryHTML = seatList.join("");
-        }
-        // Update right-card list (if present)
-        const selectedListEl = document.getElementById("selected-list");
-        if (selectedListEl) {
-          selectedListEl.innerHTML = summaryHTML;
-        }
-        updateSummaryPopup();
-
+        const list = getSelected();
+        selectedListEl.textContent = list.length ? list.join(", ") : "None";
       }
 
-      // Enhanced seat selection with zone pricing
-      // Use event delegation to handle seat clicks (works for dynamic changes and timing)
-      // Seatmap initialized
-      let lastClickedSeatId = null;
-      seatmapContainer.addEventListener("click", (e) => {
-        if (e.__seatHandled) return;
-        // Find the closest seat element clicked
-        const s = e.target.closest(".seat");
-        if (!s) return;
-        // Prevent seat selection if reserved
-        if (s.classList.contains("reserved")) return;
-        // Define seatId from clicked element
-        const seatId = s.dataset.id;
-        // Shift+click selection (range select within the same row)
-        if (e.shiftKey && lastClickedSeatId) {
-          const [rowA, numA] = lastClickedSeatId.split("-");
-          const [rowB, numB] = seatId.split("-");
-          if (rowA === rowB) {
-            const start = Math.min(parseInt(numA), parseInt(numB));
-            const end = Math.max(parseInt(numA), parseInt(numB));
-            // gather seats in range and select them
-            for (let n = start; n <= end; n++) {
-              const id = `${rowA}-${n}`;
-              const seatEl = document.querySelector(`[data-id='${id}']`);
-              if (!seatEl || seatEl.classList.contains("reserved")) continue;
-              if (!seatEl.classList.contains("selected")) {
-                if (selectedSeats.length >= MAX_SELECT) break;
-                seatEl.classList.add("selected");
-                seatEl.setAttribute("aria-selected", "true");
-                selectedSeats.push({
-                  id: id,
-                  price: parseInt(seatEl.dataset.price) || 0,
-                  zone: seatEl.dataset.zone || "REGULAR",
-                  sectionId: seatEl.dataset.sectionId || "unknown",
-                  element: seatEl,
-                });
-              }
-            }
-            lastClickedSeatId = seatId;
+      seats.forEach((s) => {
+        s.addEventListener("click", () => {
+          if (s.classList.contains("reserved")) return; // cannot select reserved
+          if (s.classList.contains("selected")) {
+            s.classList.remove("selected");
             updateSummary();
-            updateSummaryPopup();
-
-            e.__seatHandled = true;
             return;
           }
-        }
-
-        // console.log removed: simple seat click
-        const price = parseInt(s.dataset.price) || 200;
-        const zone = s.dataset.zone || "REGULAR";
-        const sectionId = s.dataset.sectionId || "unknown";
-
-        if (s.classList.contains("selected")) {
-          s.classList.remove("selected");
-          s.setAttribute("aria-selected", "false");
-          selectedSeats = selectedSeats.filter((seat) => seat.id !== seatId);
-          // Deselected seat
-          totalAmount -= price;
-        } else {
-          if (selectedSeats.length >= MAX_SELECT) {
-            alert(`You can select up to ${MAX_SELECT} seats.`);
+          const current = getSelected();
+          if (current.length >= MAX_SELECT) {
+            // simple feedback
+            alert("You can select up to " + MAX_SELECT + " seats.");
             return;
           }
           s.classList.add("selected");
-          s.setAttribute("aria-selected", "true");
-          selectedSeats.push({
-            id: seatId,
-            price,
-            zone,
-            sectionId,
-            element: s,
-          });
-          totalAmount += price;
-          // Selected seat
-        }
-        updateSummary();
-        lastClickedSeatId = seatId;
-        e.__seatHandled = true;
-        // Seat clicked
-        updateSummaryPopup();
-
-      });
-
-      // Document-level fallback for seat clicks (in case overlay interferes)
-      document.addEventListener("click", (e) => {
-        if (e.__seatHandled) return;
-        const s = e.target.closest(".seat");
-        if (!s) return;
-        // ensure it's within our seatmapContainer
-        if (!seatmapContainer.contains(s)) return;
-        // reuse same logic
-        if (s.classList.contains("reserved")) return;
-        const seatId = s.dataset.id;
-        // compute seatId early
-        // seatId already computed above
-        // Shift+click selection using fallback handler
-        if (e.shiftKey && lastClickedSeatId) {
-          const [rowA, numA] = lastClickedSeatId.split("-");
-          const [rowB, numB] = seatId.split("-");
-          if (rowA === rowB) {
-            const start = Math.min(parseInt(numA), parseInt(numB));
-            const end = Math.max(parseInt(numA), parseInt(numB));
-            for (let n = start; n <= end; n++) {
-              const id = `${rowA}-${n}`;
-              const seatEl = document.querySelector(`[data-id='${id}']`);
-              if (!seatEl || seatEl.classList.contains("reserved")) continue;
-              if (!seatEl.classList.contains("selected")) {
-                if (selectedSeats.length >= MAX_SELECT) break;
-                seatEl.classList.add("selected");
-                seatEl.setAttribute("aria-selected", "true");
-                selectedSeats.push({
-                  id: id,
-                  price: parseInt(seatEl.dataset.price) || 0,
-                  zone: seatEl.dataset.zone || "REGULAR",
-                  sectionId: seatEl.dataset.sectionId || "unknown",
-                  element: seatEl,
-                });
-              }
-            }
-            updateSummary();
-            updateSummaryPopup();
-
-            e.__seatHandled = true;
-            lastClickedSeatId = seatId;
-            return;
-          }
-        }
-        const price = parseInt(s.dataset.price) || 200;
-        if (s.classList.contains("selected")) {
-          s.classList.remove("selected");
-          selectedSeats = selectedSeats.filter((seat) => seat.id !== seatId);
-          totalAmount -= price;
-        } else {
-          if (selectedSeats.length >= MAX_SELECT) {
-            alert(`You can select up to ${MAX_SELECT} seats.`);
-            return;
-          }
-          s.classList.add("selected");
-          selectedSeats.push({
-            id: seatId,
-            price,
-            zone: s.dataset.zone || "REGULAR",
-            sectionId: s.dataset.sectionId || "unknown",
-            element: s,
-          });
-          totalAmount += price;
-        }
-        updateSummary();
-        lastClickedSeatId = seatId;
-        updateSummaryPopup();
-
+          updateSummary();
+        });
       });
 
       confirmBtn.addEventListener("click", () => {
-        if (selectedSeats.length === 0) {
+        const picked = getSelected();
+        if (!picked.length) {
           alert("Please select at least one seat.");
           return;
         }
-
-        let confirmMessage = "Booking Confirmation:\n\n";
-        const groupedByZone = selectedSeats.reduce((acc, seat) => {
-          if (!acc[seat.zone]) acc[seat.zone] = [];
-          acc[seat.zone].push(seat);
-          return acc;
-        }, {});
-
-        Object.keys(groupedByZone).forEach((zone) => {
-          const zoneSeats = groupedByZone[zone];
-          confirmMessage += `${zone} Zone:\n`;
-          // Use the user-visible label for confirmation (e.g., "F-23")
-          confirmMessage +=
-            zoneSeats.map((seat) => getSeatDisplay(seat)).join(", ") + "\n\n";
-        });
-
-        confirmMessage += `Total Seats: ${selectedSeats.length}`;
-
-        alert(confirmMessage);
+        // For now, just show a simple confirmation. In real app, you'd send to server.
+        alert("Confirmed seats: " + picked.join(", "));
       });
 
       clearBtn.addEventListener("click", () => {
         document
           .querySelectorAll(".seat.selected")
           .forEach((s) => s.classList.remove("selected"));
-        selectedSeats = [];
-        totalAmount = 0;
         updateSummary();
       });
 
-      // Pan instructions removed per user request (no pan/zoom)
-
-      // Event delegation for hover effects - much better performance than individual listeners
-      seatmapContainer.addEventListener(
-        "mouseenter",
-        (e) => {
-          // Removed price tag hover display
-        },
-        true
-      );
-
-      seatmapContainer.addEventListener(
-        "mouseleave",
-        (e) => {
-          // Removed price tag hover hide
-        },
-        true
-      );
-
-      // Initialize everything
-      document.addEventListener("DOMContentLoaded", () => {
-        initializeZones();
-        updateSummary();
-        // Add fallback: per-seat click binding in case event delegation misses
-        document.querySelectorAll(".seat").forEach((seatEl) => {
-          seatEl.addEventListener("click", (ev) => {
-            if (ev.__seatHandled) return; // skip if already handled by container
-            // Avoid duplicate handling if delegation already processed (clicked on seat inside container)
-            // Delegated handler will manage selection, so this fallback is minimal: toggle aria attribute
-            if (seatEl.classList.contains("reserved")) return;
-            const seatId = seatEl.dataset.id;
-            if (seatEl.classList.contains("selected")) {
-              seatEl.classList.remove("selected");
-              seatEl.setAttribute("aria-selected", "false");
-              selectedSeats = selectedSeats.filter((s) => s.id !== seatId);
-            } else {
-              if (selectedSeats.length >= MAX_SELECT) return;
-              seatEl.classList.add("selected");
-              seatEl.setAttribute("aria-selected", "true");
-              selectedSeats.push({
-                id: seatId,
-                price: parseInt(seatEl.dataset.price) || 200,
-                zone: seatEl.dataset.zone || "REGULAR",
-                sectionId: seatEl.dataset.sectionId || "unknown",
-                element: seatEl,
-              });
-            }
-            updateSummary();
-            ev.__seatHandled = true;
-            updateSummaryPopup();
-
-            // Fallback seat click handled
-          });
-          // Add keyboard support
-          seatEl.addEventListener("keydown", (ev) => {
-            if (ev.key === "Enter" || ev.key === " ") {
-              ev.preventDefault();
-              seatEl.click();
-            }
-          });
-        });
-      });
-
-      // If DOM is already loaded
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-          initializeZones();
-          updateSummary();
-        });
-      } else {
-        initializeZones();
-        updateSummary();
-      }
+      // initial update
+      updateSummary();
     </script>
   </body>
 </html>

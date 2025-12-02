@@ -11,3 +11,5 @@
 4. Update the seat selection summary popup to show selected seats from the canvas-based selection.
 5. Ensure existing booking and seat blocking functionality integrates and works correctly with canvas seat selection.
 6. Test all functionality (zoom, pan, selection, booking) for usability and consistency with the original design.
+ - Update seat layout (done)
+ - Run tests & validate

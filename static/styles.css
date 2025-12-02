@@ -1,8 +1,48 @@
+/* Draggable summary container styles */
+.draggable-summary {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  cursor: grab;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transition: box-shadow 0.2s;
+}
+.draggable-summary:active {
+  cursor: grabbing;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+.draggable-summary .drag-handle {
+  width: 100%;
+  text-align: center;
+  font-size: 1.3rem;
+  color: #888;
+  background: #f2f2f2;
+  border-radius: 8px 8px 0 0;
+  padding: 4px 0;
+  cursor: grab;
+  user-select: none;
+}
+.draggable-summary .summary-content {
+  margin-bottom: 8px;
+}
+@media (max-width: 600px) {
+  .draggable-summary {
+    bottom: 8px;
+    right: 8px;
+    max-width: 98vw;
+  }
+}
 body {
   font-family: Arial, sans-serif;
-  background: #f8f9fa;
+  background: #ffffff00 !important;
   margin: 0;
   padding: 20px;
+}
+
+.container {
+  background: #ffffff00 !important;
+  box-shadow: none !important;
 }
 h1 {
   color: #d81b60;
@@ -32,3 +72,61 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* Responsive styles for seat selection summary container */
+.summary.section-right {
+  max-width: 320px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin: 16px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.summary.section-right strong {
+  font-size: 1rem;
+}
+
+.summary.section-right #selected-list {
+  font-size: 1rem;
+  margin-left: 4px;
+}
+
+.summary.section-right .btn-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.summary.section-right .btn {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 0;
+  font-size: 1rem;
+  border-radius: 6px;
+}
+
+@media (max-width: 600px) {
+  .summary.section-right {
+    max-width: 98vw;
+    padding: 8px;
+    font-size: 0.95rem;
+  }
+  .summary.section-right .btn {
+    font-size: 0.95rem;
+    padding: 8px 0;
+  }
+  .summary.section-right .btn-group {
+    gap: 6px;
+  }
+}
+
+
+
+
