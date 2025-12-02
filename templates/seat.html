@@ -165,6 +165,12 @@
       .selected {
         outline: 3px solid rgba(46, 204, 113, 0.18);
         box-shadow: 0 6px 12px rgba(46, 204, 113, 0.08);
+        background: #111 !important;
+        color: #fff;
+      }
+
+      .seat.selected span {
+        color: #fff;
       }
 
       /* smaller seat labels inside circle */
@@ -3532,9 +3538,32 @@
 
       const MAX_SELECT = 6; // optional: max seats allowed to select
 
+
       function getSelected() {
         return Array.from(document.querySelectorAll(".seat.selected")).map(
-          (s) => s.dataset.id
+          (s) => {
+            let rowLabel = "";
+            let seatNum = "";
+            // Try vertical layout first
+            let rowDiv = s.closest('.row');
+            if (rowDiv) {
+              const labelEl = rowDiv.querySelector('.row-label, .row-label-left, .row-label-left-alt');
+              if (labelEl) rowLabel = labelEl.textContent.trim();
+            }
+            // Try horizontal layout if vertical not found
+            if (!rowLabel) {
+              let rowHorizontal = s.closest('.row-horizontal, .row-horizontal-alt');
+              if (rowHorizontal) {
+                const labelEl = rowHorizontal.querySelector('.row-label, .row-label-left, .row-label-left-alt');
+                if (labelEl) rowLabel = labelEl.textContent.trim();
+              }
+            }
+            // Get seat number from span inside seat
+            const seatSpan = s.querySelector('span');
+            if (seatSpan) seatNum = seatSpan.textContent.trim();
+            // If both found, return "row-seatNum", else fallback to data-id
+            return rowLabel && seatNum ? `${rowLabel}-${seatNum}` : s.dataset.id;
+          }
         );
       }
       function updateSummary() {
