@@ -29,10 +29,12 @@ def seat_selection(request):
 			seat = Seat.objects.get(seat_number=seat_num)
 			seat.is_booked = True
 			seat.save()
-			SelectedSeat.objects.create(seat=seat, user=user)
+			SelectedSeat.objects.create(seat=seat, user=user, price=seat.price)
 		return redirect('payment')
 	seats = Seat.objects.all()
-	return render(request, 'seat.html', {'seats': seats})
+	# Build seat price mapping for JS
+	seat_prices = {seat.seat_number: float(seat.price) if seat.price else 0 for seat in seats}
+	return render(request, 'seat.html', {'seats': seats, 'seat_prices': seat_prices})
 
 def payment(request):
 	user_id = request.session.get('user_id')

@@ -13,10 +13,31 @@ class Command(BaseCommand):
             'AA': 35, 'BB': 35
         }
         count = 0
+        # Define price rules
+        def get_price(row):
+            # 50 for top main (Z-Z), top-left1(P → X), top-right2(P → Y), top-right1(X → P)
+            if row == 'Z':
+                return 50
+            if row in ['P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X']:
+                return 50
+            if row in ['Y']:
+                return 50
+            # 100 for mid-left1(O → H), mid-left2(O → H), mid-right2(O → H), mid-right1(O → H)
+            if row in ['O', 'N', 'M', 'L', 'K', 'J', 'I', 'H']:
+                return 100
+            # 200 for left(AA → G), mid(AA → G), right(AA → G)
+            if row in ['AA', 'BB', 'A', 'B', 'C', 'D', 'E', 'F', 'G']:
+                return 200
+            return None
+
         for row, max_seat in seat_layout.items():
             for num in range(1, max_seat + 1):
                 seat_number = f"{row}-{num}"
-                _, created = Seat.objects.get_or_create(seat_number=seat_number)
+                price = get_price(row)
+                seat, created = Seat.objects.get_or_create(seat_number=seat_number)
+                if price is not None:
+                    seat.price = price
+                    seat.save()
                 if created:
                     count += 1
-        self.stdout.write(self.style.SUCCESS(f'{count} seats populated.'))
+        self.stdout.write(self.style.SUCCESS(f'{count} seats populated and priced.'))

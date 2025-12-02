@@ -20,3 +20,4 @@ class SelectedSeat(models.Model):
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
     user = models.ForeignKey(LandingFormData, on_delete=models.CASCADE)
     selected_at = models.DateTimeField(auto_now_add=True)
+    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
