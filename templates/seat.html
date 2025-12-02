@@ -3,8 +3,8 @@
   <head>
         <script>
           window.seatPrices = JSON.parse('{{ seat_prices|safe }}');
-          // Debug: print seatPrices and selected seat labels
-          console.log('Seat Prices:', window.seatPrices);
+          // Debug: print seatPrices mapping
+          console.log('Seat Prices mapping:', window.seatPrices);
         </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -32,17 +32,20 @@
         font-size: 20px;
         margin: 8px 0 18px;
       }
-      .screen {
-        background: linear-gradient(180deg, #fff, #f2f6ff);
-        text-align: center;
-        padding: 8px;
-        border-radius: 8px;
-        margin: -150px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-        color: #333;
-        font-weight: 600;
-        border: 1px solid #e6e9f2;
-      }
+    .screen {
+    background: linear-gradient(180deg, #fff, #f2f6ff);
+    text-align: center;
+       padding: 24px 454px 17px;
+    border-radius: 8px;
+    margin: -140px auto 0 auto;   /* fixed: screen stays at the end */
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    color: #333;
+    font-weight: 600;
+    border: 1px solid #e6e9f2;
+}
+
 
       .seatmap {
         display: flex;
@@ -161,20 +164,27 @@
         border-color: #ffe5c8;
       }
         .orange {
-          background: #fff9db !important;
+          background: #ffef9c !important;
           color: #222 !important;
           border: 1.5px solid #222 !important;
-          box-shadow: 0 0 0 2px #ffe066 inset;
+          box-shadow: 0 0 0 2px #ffdc52 inset;
+        }
+
+          .red {
+          background: #ff6d6d !important;
+          color: #222 !important;
+          border: 1.5px solid #222 !important;
+          box-shadow: 0 0 0 2px #ff2a2a inset;
         }
 
         .blue {
-          background: #b5cefd !important;
+          background: #a1c2ff !important;
           color: #222 !important;
           border: 1.5px solid #222 !important;
           box-shadow: 0 0 0 2px #66b5ff inset;
         }
         .green {
-          background: #d1fdb5 !important;
+          background: #bafc91 !important;
           color: #222 !important;
           border: 1.5px solid #222 !important;
           box-shadow: 0 0 0 2px #7dff66 inset;
@@ -681,7 +691,7 @@
         margin-top: 12px;
         padding: 10px;
         border-radius: 8px;
-        background: #fbfdff;
+        background: #000000;
         border: 1px solid #eef6ff;
       }
       .btn {
@@ -781,16 +791,16 @@
         flex-direction: column;
         align-items: center;
         min-width: 609px;
-        padding: 48px;
+        padding: 14px;
       }
 
       .section-right {
-        position: absolute;
-        bottom: -75px;
-        right: 0;
-        width: 220px;
-        min-width: 200px;
-        margin: 0;
+            position: absolute;
+    bottom: -146px;
+    right: 0;
+    width: 406px;
+    min-width: 200px;
+    margin: 0;
       }
 
       .mid-card {
@@ -2799,24 +2809,24 @@
                 <div class="row-horizontal">
                   <div class="row-label-left">BB</div>
                   <div class="seats-horizontal">
-                    <div class="seat green" data-id="BB-1"><span>1</span></div>
-                    <div class="seat green" data-id="BB-2"><span>2</span></div>
-                    <div class="seat green" data-id="BB-3"><span>3</span></div>
-                    <div class="seat green" data-id="BB-4"><span>4</span></div>
-                    <div class="seat green" data-id="BB-5">
+                    <div class="seat red reserved" data-id="BB-1"><span>1</span></div>
+                    <div class="seat red reserved" data-id="BB-2"><span>2</span></div>
+                    <div class="seat red reserved" data-id="BB-3"><span>3</span></div>
+                    <div class="seat red reserved" data-id="BB-4"><span>4</span></div>
+                    <div class="seat red reserved" data-id="BB-5">
                       <span>5</span>
                     </div>
-                    <div class="seat green" data-id="BB-6"><span>6</span></div>
-                    <div class="seat green" data-id="BB-7"><span>7</span></div>
-                    <div class="seat green" data-id="BB-8"><span>8</span></div>
-                    <div class="seat green" data-id="BB-9"><span>9</span></div>
-                    <div class="seat green" data-id="BB-10">
+                    <div class="seat red reserved" data-id="BB-6"><span>6</span></div>
+                    <div class="seat red reserved" data-id="BB-7"><span>7</span></div>
+                    <div class="seat red reserved" data-id="BB-8"><span>8</span></div>
+                    <div class="seat red reserved" data-id="BB-9"><span>9</span></div>
+                    <div class="seat red reserved" data-id="BB-10">
                       <span>10</span>
                     </div>
-                    <div class="seat green" data-id="BB-11">
+                    <div class="seat red reserved" data-id="BB-11">
                       <span>11</span>
                     </div>
-                    <div class="seat green" data-id="BB-12">
+                    <div class="seat red reserved" data-id="BB-12">
                       <span>12</span>
                     </div>
                   </div>
@@ -2826,24 +2836,24 @@
                 <div class="row-horizontal">
                   <div class="row-label-left">AA</div>
                   <div class="seats-horizontal">
-                    <div class="seat green" data-id="AA-1"><span>1</span></div>
-                    <div class="seat green" data-id="AA-2"><span>2</span></div>
-                    <div class="seat green" data-id="AA-3"><span>3</span></div>
-                    <div class="seat green" data-id="AA-4">
+                    <div class="seat red reserved" data-id="AA-1"><span>1</span></div>
+                    <div class="seat red reserved" data-id="AA-2"><span>2</span></div>
+                    <div class="seat red reserved" data-id="AA-3"><span>3</span></div>
+                    <div class="seat red reserved" data-id="AA-4">
                       <span>4</span>
                     </div>
-                    <div class="seat green" data-id="AA-5"><span>5</span></div>
-                    <div class="seat green" data-id="AA-6"><span>6</span></div>
-                    <div class="seat green" data-id="AA-7"><span>7</span></div>
-                    <div class="seat green" data-id="AA-8"><span>8</span></div>
-                    <div class="seat green" data-id="AA-9"><span>9</span></div>
-                    <div class="seat green" data-id="AA-10">
+                    <div class="seat red reserved" data-id="AA-5"><span>5</span></div>
+                    <div class="seat red reserved" data-id="AA-6"><span>6</span></div>
+                    <div class="seat red reserved" data-id="AA-7"><span>7</span></div>
+                    <div class="seat red reserved" data-id="AA-8"><span>8</span></div>
+                    <div class="seat red reserved" data-id="AA-9"><span>9</span></div>
+                    <div class="seat red reserved" data-id="AA-10">
                       <span>10</span>
                     </div>
-                    <div class="seat green" data-id="AA-11">
+                    <div class="seat red reserved" data-id="AA-11">
                       <span>11</span>
                     </div>
-                    <div class="seat green" data-id="AA-12">
+                    <div class="seat red reserved" data-id="AA-12">
                       <span>12</span>
                     </div>
                   </div>
@@ -3082,7 +3092,7 @@
                   <div class="row-horizontal-alt">
                     <div class="row-label-left-alt">C</div>
                     <div class="seats-horizontal-alt">
-                      <div class="seat green data-id="C2-1">
+                      <div class="seat green" data-id="C2-1">
                         <span>13</span>
                       </div>
                       <div class="seat green" data-id="C2-2">
@@ -3221,34 +3231,34 @@
 <div class="row-horizontal-alt">
   <div class="row-label-left-alt">BB</div>
   <div class="seats-horizontal-alt">
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
-    <div class="seat blue reserved" data-id="F-3">
+    <div class="seat red reserved" data-id="F-3">
       <span>3</span>
     </div>
   </div>
@@ -3258,37 +3268,37 @@
                   <div class="row-horizontal-alt">
                     <div class="row-label-left-alt">AA</div>
                     <div class="seats-horizontal-alt">
-                      <div class="seat green data-id="B2-1">
+                      <div class="seat red reserved" data-id="B2-1"  >
                         <span>13</span>
                       </div>
-                      <div class="seat green data-id="B2-2">
+                      <div class="seat red reserved" data-id="B2-2">
                         <span>14</span>
                       </div>
-                      <div class="seat green data-id="B2-3">
+                      <div class="seat red reserved" data-id="B2-3">
                         <span>15</span>
                       </div>
-                      <div class="seat green data-id="B2-4">
+                      <div class="seat red reserved" data-id="B2-4">
                         <span>16</span>
                       </div>
-                      <div class="seat green data-id="B2-5">
+                      <div class="seat red reserved" data-id="B2-5">
                         <span>17</span>
                       </div>
-                      <div class="seat green data-id="B2-6">
+                      <div class="seat red reserved" data-id="B2-6">
                         <span>18</span>
                       </div>
-                      <div class="seat green" data-id="B2-7">
+                      <div class="seat red reserved" data-id="B2-7">
                         <span>19</span>
                       </div>
-                      <div class="seat green" data-id="B2-8">
+                      <div class="seat red reserved" data-id="B2-8">
                         <span>20</span>
                       </div>
-                      <div class="seat green" data-id="B2-9">
+                      <div class="seat red reserved" data-id="B2-9">
                         <span>21</span>
                       </div>
-                      <div class="seat green" data-id="B2-10">
+                      <div class="seat red reserved" data-id="B2-10">
                         <span>22</span>
                       </div>
-                      <div class="seat green" data-id="B2-11">
+                      <div class="seat red reserved" data-id="B2-11">
                         <span>23</span>
                       </div>
                     </div>
@@ -3451,40 +3461,40 @@
                 <!-- Row BB Block -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat green" data-id="BBR-1">
+                    <div class="seat red reserved" data-id="BBR-1">
                       <span>25</span>
                     </div>
-                    <div class="seat green" data-id="BBR-2">
+                    <div class="seat red reserved" data-id="BBR-2">
                       <span>26</span>
                     </div>
-                    <div class="seat green" data-id="BBR-3">
+                    <div class="seat red reserved" data-id="BBR-3">
                       <span>27</span>
                     </div>
-                    <div class="seat green" data-id="BBR-4">
+                    <div class="seat red reserved" data-id="BBR-4">
                       <span>28</span>
                     </div>
-                    <div class="seat green" data-id="BBR-5">
+                    <div class="seat red reserved" data-id="BBR-5">
                       <span>29</span>
                     </div>
-                    <div class="seat green" data-id="BBR-6">
+                    <div class="seat red reserved" data-id="BBR-6">
                       <span>30</span>
                     </div>
-                    <div class="seat green" data-id="BBR-7">
+                    <div class="seat red reserved" data-id="BBR-7">
                       <span>31</span>
                     </div>
-                    <div class="seat green" data-id="BBR-8">
+                    <div class="seat red reserved" data-id="BBR-8">
                       <span>32</span>
                     </div>
-                    <div class="seat green" data-id="BBR-9">
+                    <div class="seat red reserved" data-id="BBR-9">
                       <span>33</span>
                     </div>
-                    <div class="seat green" data-id="BBR-10">
+                    <div class="seat red reserved" data-id="BBR-10">
                       <span>34</span>
                     </div>
-                    <div class="seat green" data-id="BBR-11">
+                    <div class="seat red reserved" data-id="BBR-11">
                       <span>35</span>
                     </div>
-                    <div class="seat green" data-id="BBR-12">
+                    <div class="seat red reserved" data-id="BBR-12">
                       <span>36</span>
                     </div>
                   </div>
@@ -3494,40 +3504,40 @@
                 <!-- Row AA Block -->
                 <div class="row-horizontal">
                   <div class="seats-horizontal">
-                    <div class="seat green" data-id="AAR-1">
+                    <div class="seat red reserved" data-id="AAR-1">
                       <span>24</span>
                     </div>
-                    <div class="seat green" data-id="AAR-2">
+                    <div class="seat red reserved" data-id="AAR-2">
                       <span>25</span>
                     </div>
-                    <div class="seat green" data-id="AAR-3">
+                    <div class="seat red reserved" data-id="AAR-3">
                       <span>26</span>
                     </div>
-                    <div class="seat green" data-id="AAR-4">
+                    <div class="seat red reserved" data-id="AAR-4">
                       <span>27</span>
                     </div>
-                    <div class="seat green" data-id="AAR-5">
+                    <div class="seat red reserved" data-id="AAR-5">
                       <span>28</span>
                     </div>
-                    <div class="seat green" data-id="AAR-6">
+                    <div class="seat red reserved" data-id="AAR-6">
                       <span>29</span>
                     </div>
-                    <div class="seat green" data-id="AAR-7">
+                    <div class="seat red reserved" data-id="AAR-7">
                       <span>30</span>
                     </div>
-                    <div class="seat green" data-id="AAR-8">
+                    <div class="seat red reserved" data-id="AAR-8">
                       <span>31</span>
                     </div>
-                    <div class="seat green" data-id="AAR-9">
+                    <div class="seat red reserved" data-id="AAR-9">
                       <span>32</span>
                     </div>
-                    <div class="seat green" data-id="AAR-10">
+                    <div class="seat red reserved" data-id="AAR-10">
                       <span>33</span>
                     </div>
-                    <div class="seat green" data-id="AAR-11">
+                    <div class="seat red reserved" data-id="AAR-11">
                       <span>34</span>
                     </div>
-                    <div class="seat green" data-id="AAR-12">
+                    <div class="seat red reserved" data-id="AAR-12">
                       <span>35</span>
                     </div>
                   </div>
@@ -3559,7 +3569,7 @@
       </div>
     </div>
 
-    <div class="screen">SCREEN</div>
+    <div class="screen">Stage</div>
 
     <script>
       // Basic seat selection logic (static replica)
@@ -3600,15 +3610,16 @@
       }
       function updateSummary() {
         const list = getSelected();
+        // Debug: print selected seat labels
+        console.log('Selected seat labels:', list);
         // Show price for each seat if available
         let seatSummary = list.map(label => {
-          // Try to get price from a global seatPrices object
           let price = window.seatPrices ? window.seatPrices[label] : undefined;
           if (price === undefined) {
             // Try alternate label formats (strip spaces, try uppercase)
             price = window.seatPrices ? window.seatPrices[label.replace(/\s+/g, '').toUpperCase()] : undefined;
           }
-          if (price) {
+          if (price !== undefined && price !== null) {
             return `${label} (₹${price})`;
           }
           return label;
@@ -3622,7 +3633,7 @@
             if (price === undefined) {
               price = window.seatPrices[label.replace(/\s+/g, '').toUpperCase()];
             }
-            if (price) {
+            if (price !== undefined && price !== null) {
               total += parseFloat(price);
             }
           });
@@ -3655,8 +3666,17 @@
           alert("Please select at least one seat.");
           return;
         }
-        // No confirmation alert, submit the form immediately
-        document.getElementById("selectedSeatsInput").value = picked.join(",");
+        // Remove any previous hidden inputs for selected seats
+        document.querySelectorAll('input[name="selected_seats"]').forEach(e => e.remove());
+        // Add a hidden input for each selected seat
+        const form = document.getElementById("seatForm");
+        picked.forEach(label => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'selected_seats';
+          input.value = label;
+          form.appendChild(input);
+        });
         // Pass total price to payment page via localStorage
         let total = 0;
         if (window.seatPrices) {
@@ -3667,7 +3687,7 @@
           });
         }
         localStorage.setItem('totalPrice', total);
-        document.getElementById("seatForm").submit();
+        form.submit();
       });
 
       clearBtn.addEventListener("click", () => {
