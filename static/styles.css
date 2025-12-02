@@ -88,6 +88,13 @@ a:hover {
   align-items: flex-start;
 }
 
+/* Light blue seat style for mid-left1(O → H) section */
+.seat.blue {
+  background: #b3e5fc;
+  border: 1px solid #222;
+  color: #222;
+}
+
 .summary.section-right strong {
   font-size: 1rem;
 }

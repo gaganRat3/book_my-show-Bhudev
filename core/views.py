@@ -26,7 +26,9 @@ def seat_selection(request):
 		selected_seats = request.POST.getlist('selected_seats')
 		user = LandingFormData.objects.get(id=user_id)
 		for seat_num in selected_seats:
-			seat, _ = Seat.objects.get_or_create(seat_number=seat_num)
+			seat = Seat.objects.get(seat_number=seat_num)
+			seat.is_booked = True
+			seat.save()
 			SelectedSeat.objects.create(seat=seat, user=user)
 		return redirect('payment')
 	seats = Seat.objects.all()
