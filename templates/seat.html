@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
         <script>
-          window.seatPrices = {{ seat_prices|safe }};
+          window.seatPrices = JSON.parse('{{ seat_prices|safe }}');
           // Debug: print seatPrices and selected seat labels
           console.log('Seat Prices:', window.seatPrices);
         </script>
