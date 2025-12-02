@@ -1,5 +1,8 @@
 
 from django.shortcuts import render, redirect
+from django.db.models import Sum, Min, F, Value
+from django.db.models.functions import Cast
+from django.db import models
 from .forms import LandingForm, PaymentScreenshotForm
 from .models import LandingFormData, PaymentScreenshot, Seat, SelectedSeat
 
@@ -34,7 +37,9 @@ def seat_selection(request):
 				seat = Seat.objects.get(seat_number=seat_num_clean)
 				seat.is_booked = True
 				seat.save()
-				SelectedSeat.objects.create(seat=seat, user=user, price=seat.price)
+				# Prevent duplicate booking for same user and seat
+				if not SelectedSeat.objects.filter(seat=seat, user=user).exists():
+					SelectedSeat.objects.create(seat=seat, user=user, price=seat.price)
 			except Seat.DoesNotExist:
 				missing_seats.append(seat_num_clean)
 		if missing_seats:
@@ -60,3 +65,33 @@ def payment(request):
 	else:
 		form = PaymentScreenshotForm()
 	return render(request, 'payment.html', {'form': form})
+
+# Booking report view: group by user, aggregate seat numbers
+from django.db.models import Func
+
+class GroupConcat(Func):
+	function = 'GROUP_CONCAT'
+	template = '%(function)s(%(expressions)s)'
+
+def booking_report(request):
+	report = (
+		SelectedSeat.objects
+		.values('user__name', 'user__phone')
+		.annotate(
+			seats=GroupConcat('seat__seat_number'),
+			total_paid=Sum('price'),
+			selected_at=Min('selected_at')
+		)
+		.order_by('user__name')
+	)
+	# Prepare context for template
+	final_report = []
+	for row in report:
+		final_report.append({
+			'user': row['user__name'],
+			'phone': row['user__phone'],
+			'seats': row['seats'],
+			'total_paid': row['total_paid'],
+			'selected_at': row['selected_at'],
+		})
+	return render(request, 'admin/booking_report.html', {'report': final_report})

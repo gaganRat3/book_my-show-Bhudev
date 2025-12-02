@@ -20,11 +20,12 @@ Including another URLconf
 from django.urls import path
 from django.contrib import admin
 
-from core.views import landing_form, seat_selection, payment
+from core.views import landing_form, seat_selection, payment, booking_report
 
 urlpatterns = [
     path('', landing_form, name='landing_form'),
     path('seats/', seat_selection, name='seat_selection'),
     path('payment/', payment, name='payment'),
     path('admin/', admin.site.urls),
+    path('admin/report/', booking_report, name='booking_report'),
 ]

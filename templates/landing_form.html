@@ -140,6 +140,33 @@
       .movie-form-btn:hover {
         background: linear-gradient(90deg, #6a1b9a 0%, #d81b60 100%);
       }
+        /* Responsive styles for mobile */
+        @media (max-width: 600px) {
+          .movie-form-card {
+            width: 96vw;
+            min-width: 0;
+            max-width: 99vw;
+            padding: 18px 8px 18px 8px;
+            border-radius: 12px;
+          }
+          .movie-form-header h1 {
+            font-size: 1.2rem;
+          }
+          .movie-icon {
+            font-size: 1.6rem;
+          }
+          .movie-form-group label {
+            font-size: 0.95rem;
+          }
+          .movie-form-group input {
+            font-size: 0.95rem;
+            padding: 8px 8px;
+          }
+          .movie-form-btn {
+            font-size: 1rem;
+            padding: 10px 0;
+          }
+        }
     </style>
   </body>
 </html>

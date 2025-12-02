@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Booking Report</h1>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Phone</th>
+            <th>Seats</th>
+            <th>Total Paid</th>
+            <th>Earliest Booking</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in report %}
+        <tr>
+            <td>{{ row.user }}</td>
+            <td>{{ row.phone }}</td>
+            <td>{{ row.seats }}</td>
+            <td>₹{{ row.total_paid }}</td>
+            <td>{{ row.selected_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

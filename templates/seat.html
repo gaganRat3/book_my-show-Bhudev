@@ -687,13 +687,21 @@
         border-radius: 4px;
         display: inline-block;
       }
-      .summary {
-        margin-top: 12px;
-        padding: 10px;
-        border-radius: 8px;
-        background: #000000;
-        border: 1px solid #eef6ff;
-      }
+     .summary{
+    background: #001f54;
+    border: 2px solid #0074d9;
+    color: #ffffff;
+    padding: 18px;
+    border-radius: 12px;
+    width: 280px;
+}
+
+.summary button{
+    background: #0074d9;
+    color: white;
+    border-radius: 6px;
+}
+
       .btn {
         padding: 8px 12px;
         border-radius: 8px;
@@ -3677,6 +3685,9 @@
           input.value = label;
           form.appendChild(input);
         });
+        // Save selected seats and prices to localStorage for payment page
+        localStorage.setItem('selectedSeats', JSON.stringify(picked));
+        localStorage.setItem('seatPrices', JSON.stringify(window.seatPrices || {}));
         // Pass total price to payment page via localStorage
         let total = 0;
         if (window.seatPrices) {
