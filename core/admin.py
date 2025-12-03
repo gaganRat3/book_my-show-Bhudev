@@ -1,7 +1,26 @@
+from django.utils.html import format_html
 from django.contrib import admin
+# PaymentScreenshot admin customization
+from .models import PaymentScreenshot
+
+class PaymentScreenshotAdmin(admin.ModelAdmin):
+	list_display = ('user_name', 'screenshot_thumbnail', 'uploaded_at')
+
+	def user_name(self, obj):
+		return obj.user.name if obj.user else "-"
+	user_name.short_description = 'User Name'
+
+	def screenshot_thumbnail(self, obj):
+		if obj.image:
+			return format_html('<img src="{}" width="100" style="object-fit:contain;" />', obj.image.url)
+		return "No Image"
+	screenshot_thumbnail.short_description = 'Screenshot'
+
+admin.site.register(PaymentScreenshot, PaymentScreenshotAdmin)
 from django.urls import path
 from django.http import HttpResponse
 from django.template import loader
+from django.shortcuts import redirect
 from core.models import SelectedSeat, LandingFormData
 
 class SelectedSeatSummaryAdmin(admin.ModelAdmin):
@@ -10,8 +29,38 @@ class SelectedSeatSummaryAdmin(admin.ModelAdmin):
 		custom_urls = [
 			path('selectedseat-summary/', self.admin_site.admin_view(self.selectedseat_summary_view), name="selectedseat-summary"),
 			path('selectedseat-summary/edit/<int:user_id>/', self.admin_site.admin_view(self.edit_selectedseat_view), name="edit-selectedseat"),
+			path('selectedseat-summary/export/', self.admin_site.admin_view(self.export_selectedseat_excel), name="export-selectedseat-excel"),
 		]
 		return custom_urls + urls
+
+	def export_selectedseat_excel(self, request):
+		import openpyxl
+		from openpyxl.utils import get_column_letter
+		from django.http import HttpResponse
+		users = LandingFormData.objects.all()
+		wb = openpyxl.Workbook()
+		ws = wb.active
+		ws.title = "Selected Seats"
+		headers = ["User Name", "Phone", "Seats", "Total Paid", "Earliest Booking"]
+		ws.append(headers)
+		for user in users:
+			seats = SelectedSeat.objects.filter(user=user)
+			seat_labels = [s.seat.seat_number for s in seats]
+			total_paid = sum(float(s.price or 0) for s in seats)
+			earliest = seats.order_by('selected_at').first().selected_at if seats.exists() else None
+			ws.append([
+				user.name,
+				user.phone,
+				', '.join(seat_labels),
+				total_paid,
+				str(earliest) if earliest else ""
+			])
+		for col in range(1, len(headers) + 1):
+			ws.column_dimensions[get_column_letter(col)].width = 20
+		response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+		response['Content-Disposition'] = 'attachment; filename=selected_seat_summary.xlsx'
+		wb.save(response)
+		return response
 	def edit_selectedseat_view(self, request, user_id):
 		from core.forms import SelectedSeatEditForm
 		user = LandingFormData.objects.get(id=user_id)
@@ -35,18 +84,24 @@ class SelectedSeatSummaryAdmin(admin.ModelAdmin):
 		users = LandingFormData.objects.all()
 		report = []
 		for user in users:
-				seats = SelectedSeat.objects.filter(user=user)
-				seat_labels = [s.seat.seat_number for s in seats]
-				total_paid = sum(float(s.price or 0) for s in seats)
-				earliest = seats.order_by('selected_at').first().selected_at if seats.exists() else None
-				report.append({
-					'id': user.id,
-					'user': user.name,
-					'phone': user.phone,
-					'seats': ', '.join(seat_labels),
-					'total_paid': total_paid,
-					'selected_at': earliest,
-				})
+			seats = SelectedSeat.objects.filter(user=user)
+			seat_labels = [s.seat.seat_number for s in seats]
+			total_paid = sum(float(s.price or 0) for s in seats)
+			earliest = seats.order_by('selected_at').first().selected_at if seats.exists() else None
+			# Get latest payment screenshot for user (if any)
+			screenshot_url = None
+			payment = user.payments.order_by('-uploaded_at').first() if hasattr(user, 'payments') else None
+			if payment and payment.image:
+				screenshot_url = payment.image.url
+			report.append({
+				'id': user.id,
+				'user': user.name,
+				'phone': user.phone,
+				'seats': ', '.join(seat_labels),
+				'total_paid': total_paid,
+				'selected_at': earliest,
+				'screenshot_url': screenshot_url,
+			})
 		template = loader.get_template("admin/selectedseat_summary.html")
 		context = {"report": report}
 		return HttpResponse(template.render(context, request))
@@ -94,12 +149,24 @@ class BookingReportAdmin(admin.ModelAdmin):
 from django.contrib import admin
 from .models import LandingFormData, PaymentScreenshot, Seat, SelectedSeat
 
+
 @admin.register(Seat)
 class SeatAdmin(admin.ModelAdmin):
 	list_display = ('seat_number', 'is_booked')
 
+	actions = ['mark_as_booked', 'mark_as_unbooked']
+
+	def mark_as_booked(self, request, queryset):
+		updated = queryset.update(is_booked=True)
+		self.message_user(request, f"{updated} seat(s) marked as booked.")
+	mark_as_booked.short_description = "Mark selected seats as booked"
+
+	def mark_as_unbooked(self, request, queryset):
+		updated = queryset.update(is_booked=False)
+		self.message_user(request, f"{updated} seat(s) marked as unbooked.")
+	mark_as_unbooked.short_description = "Mark selected seats as unbooked"
+
 ## Removed duplicate registration for LandingFormData; now only registered with SelectedSeatSummaryAdmin
-admin.site.register(PaymentScreenshot)
 
 
 

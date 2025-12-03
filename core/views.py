@@ -1,3 +1,10 @@
+# Payment confirmation view
+def payment_confirmation(request):
+		user_id = request.session.get('user_id')
+		selected_seats = []
+		if user_id:
+			selected_seats = [s.seat.seat_number for s in SelectedSeat.objects.filter(user_id=user_id)]
+		return render(request, 'payment_confirmation.html', {'selected_seats': selected_seats})
 
 from django.shortcuts import render, redirect
 from django.db.models import Sum, Min, F, Value
@@ -25,15 +32,19 @@ def seat_selection(request):
 	user_id = request.session.get('user_id')
 	if not user_id:
 		return redirect('landing_form')
+	try:
+		user = LandingFormData.objects.get(id=user_id)
+	except LandingFormData.DoesNotExist:
+		return redirect('landing_form')
 	if request.method == 'POST':
 		selected_seat_labels = request.POST.getlist('selected_seats')
 		print("[DEBUG] Raw seat labels received:", selected_seat_labels)
-		user = LandingFormData.objects.get(id=user_id)
 		from django.http import HttpResponse
 		missing_seats = []
 		for seat_num in selected_seat_labels:
 			seat_num_clean = seat_num.strip()
 			try:
+				# Use the exact data-id value for seat_number
 				seat = Seat.objects.get(seat_number=seat_num_clean)
 				seat.is_booked = True
 				seat.save()
@@ -47,11 +58,16 @@ def seat_selection(request):
 			return HttpResponse(f"The following seats do not exist: {', '.join(missing_seats)}", status=400)
 		return redirect('payment')
 	seats = Seat.objects.all()
-	# Build seat price mapping for JS
+	booked_seats = list(seats.filter(is_booked=True).values_list('seat_number', flat=True))
 	import json
 	seat_prices = {seat.seat_number: float(seat.price) if seat.price else 0 for seat in seats}
 	seat_prices_json = json.dumps(seat_prices)
-	return render(request, 'seat.html', {'seats': seats, 'seat_prices': seat_prices_json})
+	booked_seats_json = json.dumps(booked_seats)
+	return render(request, 'seat.html', {
+		'seats': seats,
+		'seat_prices': seat_prices_json,
+		'booked_seats': booked_seats_json,
+	})
 
 def payment(request):
 	user_id = request.session.get('user_id')
@@ -61,7 +77,7 @@ def payment(request):
 		form = PaymentScreenshotForm(request.POST, request.FILES)
 		if form.is_valid():
 			PaymentScreenshot.objects.create(user=LandingFormData.objects.get(id=user_id), image=form.cleaned_data['image'])
-			return render(request, 'payment.html', {'success': True})
+			return redirect('payment_confirmation')
 	else:
 		form = PaymentScreenshotForm()
 	return render(request, 'payment.html', {'form': form})

@@ -3,8 +3,28 @@
   <head>
         <script>
           window.seatPrices = JSON.parse('{{ seat_prices|safe }}');
+          window.bookedSeats = JSON.parse('{{ booked_seats|safe }}');
           // Debug: print seatPrices mapping
           console.log('Seat Prices mapping:', window.seatPrices);
+          console.log('Booked seats:', window.bookedSeats);
+        </script>
+        <script>
+          // Mark booked seats as reserved and red, and disable click
+          document.addEventListener('DOMContentLoaded', function() {
+            // Debug: print all seat elements and booked seats
+            const bookedSeats = window.bookedSeats || [];
+            console.log('Booked seats from backend:', bookedSeats);
+            document.querySelectorAll('.seat').forEach(function(seat) {
+              var seatLabel = seat.getAttribute('data-id');
+              // Debug: print each seat's data-id
+              console.log('Checking seat:', seatLabel);
+              if (bookedSeats.includes(seatLabel)) {
+                console.log('Marking as booked:', seatLabel);
+                seat.classList.add('reserved', 'red');
+                seat.style.pointerEvents = 'none';
+              }
+            });
+          });
         </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
