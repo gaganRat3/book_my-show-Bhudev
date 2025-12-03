@@ -19,6 +19,8 @@ Including another URLconf
 
 from django.urls import path
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 
 from core.views import landing_form, seat_selection, payment, booking_report
 
@@ -28,4 +30,4 @@ urlpatterns = [
     path('payment/', payment, name='payment'),
     path('admin/', admin.site.urls),
     path('admin/report/', booking_report, name='booking_report'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

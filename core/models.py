@@ -7,6 +7,7 @@ class LandingFormData(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
 
 class PaymentScreenshot(models.Model):
+    user = models.ForeignKey(LandingFormData, on_delete=models.CASCADE, related_name='payments', null=True, blank=True)
     image = models.ImageField(upload_to='payment_screenshots/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

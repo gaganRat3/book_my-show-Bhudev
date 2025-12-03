@@ -9,6 +9,7 @@
             <th>Seats</th>
             <th>Total Paid</th>
             <th>Earliest Booking</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -19,6 +20,10 @@
             <td>{{ row.seats }}</td>
             <td>₹{{ row.total_paid }}</td>
             <td>{{ row.selected_at }}</td>
+            <td>
+                <a href="/admin/core/landingformdata/{{ row.id }}/change/">Edit</a> |
+                <a href="/admin/core/landingformdata/{{ row.id }}/delete/">Delete</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

@@ -60,7 +60,7 @@ def payment(request):
 	if request.method == 'POST':
 		form = PaymentScreenshotForm(request.POST, request.FILES)
 		if form.is_valid():
-			PaymentScreenshot.objects.create(image=form.cleaned_data['image'])
+			PaymentScreenshot.objects.create(user=LandingFormData.objects.get(id=user_id), image=form.cleaned_data['image'])
 			return render(request, 'payment.html', {'success': True})
 	else:
 		form = PaymentScreenshotForm()
