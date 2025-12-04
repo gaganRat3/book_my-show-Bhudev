@@ -25,13 +25,32 @@ class SelectedSeat(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 
 # SIGNALS MUST BE AT THE END
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+@receiver(post_save, sender='core.Seat')
+def broadcast_seat_booked(sender, instance, created, **kwargs):
+    """Broadcast seat booking to all connected WebSocket clients when is_booked changes"""
+    # Only broadcast if seat is marked as booked (not when created)
+    if instance.is_booked and not created:
+        channel_layer = get_channel_layer()
+        seat_numbers = [instance.seat_number]
+        async_to_sync(channel_layer.group_send)(
+            'seat_updates',
+            {
+                'type': 'seat_update',
+                'seats': seat_numbers
+            }
+        )
+        print(f"[WebSocket] Broadcasting seat booked: {seat_numbers}")
 
 @receiver(post_delete, sender=LandingFormData)
 def unbook_seats_on_user_delete(sender, instance, **kwargs):
     print(f"Signal triggered: Deleting user {instance.id} and unbooking seats.")
     selected_seats = SelectedSeat.objects.filter(user=instance)
+    unbooked_seats = []
     for selected_seat in selected_seats:
         seat = selected_seat.seat
         # Delete the SelectedSeat for this user
@@ -41,3 +60,16 @@ def unbook_seats_on_user_delete(sender, instance, **kwargs):
             print(f"Unbooking seat: {seat.seat_number}")
             seat.is_booked = False
             seat.save()
+            unbooked_seats.append(seat.seat_number)
+    
+    # Broadcast unbooking to all clients
+    if unbooked_seats:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'seat_updates',
+            {
+                'type': 'seat_update',
+                'seats': unbooked_seats
+            }
+        )
+        print(f"[WebSocket] Broadcasting seats unbooked: {unbooked_seats}")

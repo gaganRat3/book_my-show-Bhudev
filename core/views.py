@@ -41,16 +41,19 @@ def seat_selection(request):
 		print("[DEBUG] Raw seat labels received:", selected_seat_labels)
 		from django.http import HttpResponse
 		missing_seats = []
+		# Clear any previous seat selections for this user
+		SelectedSeat.objects.filter(user=user).delete()
+		
 		for seat_num in selected_seat_labels:
 			seat_num_clean = seat_num.strip()
 			try:
 				# Use the exact data-id value for seat_number
 				seat = Seat.objects.get(seat_number=seat_num_clean)
-				seat.is_booked = True
-				seat.save()
-				# Prevent duplicate booking for same user and seat
-				if not SelectedSeat.objects.filter(seat=seat, user=user).exists():
-					SelectedSeat.objects.create(seat=seat, user=user, price=seat.price)
+				# Check if seat is already booked by someone else
+				if seat.is_booked:
+					return HttpResponse(f"Seat {seat_num_clean} is already booked. Please refresh and select different seats.", status=400)
+				# Save to SelectedSeat but DON'T mark is_booked yet (pending payment)
+				SelectedSeat.objects.create(seat=seat, user=user, price=seat.price)
 			except Seat.DoesNotExist:
 				missing_seats.append(seat_num_clean)
 		if missing_seats:
@@ -59,6 +62,7 @@ def seat_selection(request):
 		return redirect('payment')
 	seats = Seat.objects.all()
 	booked_seats = list(seats.filter(is_booked=True).values_list('seat_number', flat=True))
+	print(f"[DEBUG] Booked seats being sent to template: {booked_seats}")
 	import json
 	seat_prices = {seat.seat_number: float(seat.price) if seat.price else 0 for seat in seats}
 	seat_prices_json = json.dumps(seat_prices)
@@ -76,7 +80,18 @@ def payment(request):
 	if request.method == 'POST':
 		form = PaymentScreenshotForm(request.POST, request.FILES)
 		if form.is_valid():
-			PaymentScreenshot.objects.create(user=LandingFormData.objects.get(id=user_id), image=form.cleaned_data['image'])
+			user = LandingFormData.objects.get(id=user_id)
+			PaymentScreenshot.objects.create(user=user, image=form.cleaned_data['image'])
+			
+			# NOW mark seats as booked after payment is uploaded
+			selected_seats = SelectedSeat.objects.filter(user=user)
+			for selected_seat in selected_seats:
+				seat = selected_seat.seat
+				if not seat.is_booked:
+					seat.is_booked = True
+					seat.save()
+					print(f"[Payment Confirmed] Seat {seat.seat_number} marked as booked")
+			
 			return redirect('payment_confirmation')
 	else:
 		form = PaymentScreenshotForm()
