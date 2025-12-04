@@ -1,3 +1,16 @@
+/* Booked seat styles */
+.seat.reserved {
+  background: #d81b60 !important; /* Red background */
+  color: #fff !important;
+  border: 2px solid #b71c1c !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+.seat.red {
+  background: #d81b60 !important; /* Red background */
+  color: #fff !important;
+  border: 2px solid #b71c1c !important;
+}
 /* Draggable summary container styles */
 .draggable-summary {
   position: fixed;
@@ -5,12 +18,12 @@
   right: 24px;
   z-index: 1000;
   cursor: grab;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transition: box-shadow 0.2s;
-} 
+}
 .draggable-summary:active {
   cursor: grabbing;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 .draggable-summary .drag-handle {
   width: 100%;
@@ -22,6 +35,7 @@
   padding: 4px 0;
   cursor: grab;
   user-select: none;
+  -webkit-user-select: none;
 }
 .draggable-summary .summary-content {
   margin-bottom: 8px;
@@ -81,7 +95,7 @@ a:hover {
   padding: 12px;
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   margin: 16px auto;
   display: flex;
   flex-direction: column;
@@ -133,7 +147,3 @@ a:hover {
     gap: 6px;
   }
 }
-
-
-
-

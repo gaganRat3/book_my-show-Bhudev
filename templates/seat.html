@@ -38,62 +38,97 @@
     <script>
       // Mark booked seats as reserved and red, and disable click
       document.addEventListener("DOMContentLoaded", function () {
+        // Backend to frontend seat ID mapping for all sections
         // Backend to frontend seat ID mapping for mid section rows (G2, F2, E2, ...)
         function backendToFrontendSeatId(seatId) {
+          // Map F-29..F-40 to FR-1..FR-12
+          {
+            const match = seatId.match(/^F-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 29 && num <= 40) {
+                return `FR-${num - 28}`;
+              }
+            }
+          }
+          // Map G-30..G-41 to GR-1..GR-12
+          {
+            const match = seatId.match(/^G-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 30 && num <= 41) {
+                return `GR-${num - 29}`;
+              }
+            }
+          }
           // Map G-13..G-29 to G2-1..G2-17
-          let match = seatId.match(/^G-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num >= 13 && num <= 29) {
-              return `G2-${num - 12}`;
+          {
+            const match = seatId.match(/^G-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 13 && num <= 29) {
+                return `G2-${num - 12}`;
+              }
             }
           }
           // Map F-13..F-28 to F2-1..F2-16
-          match = seatId.match(/^F-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num >= 13 && num <= 28) {
-              return `F2-${num - 12}`;
+          {
+            const match = seatId.match(/^F-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 13 && num <= 28) {
+                return `F2-${num - 12}`;
+              }
             }
           }
-          // Map E-13..E-27 to E2-1..E2-15 (if needed, extend for other rows)
-          match = seatId.match(/^E-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num >= 13 && num <= 27) {
-              return `E2-${num - 12}`;
+          // Map E-13..E-27 to E2-1..E2-15
+          {
+            const match = seatId.match(/^E-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 13 && num <= 27) {
+                return `E2-${num - 12}`;
+              }
             }
           }
           // Map D-13..D-26 to D2-1..D2-14
-          match = seatId.match(/^D-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num >= 13 && num <= 26) {
-              return `D2-${num - 12}`;
+          {
+            const match = seatId.match(/^D-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 13 && num <= 26) {
+                return `D2-${num - 12}`;
+              }
             }
           }
           // Map C-13..C-25 to C2-1..C2-13
-          match = seatId.match(/^C-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num >= 13 && num <= 25) {
-              return `C2-${num - 12}`;
+          {
+            const match = seatId.match(/^C-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 13 && num <= 25) {
+                return `C2-${num - 12}`;
+              }
             }
           }
           // Map B-13..B-25 to B2-1..B2-13
-          match = seatId.match(/^B-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num >= 13 && num <= 25) {
-              return `B2-${num - 12}`;
+          {
+            const match = seatId.match(/^B-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 13 && num <= 25) {
+                return `B2-${num - 12}`;
+              }
             }
           }
           // Map A-13..A-24 to A2-1..A2-12
-          match = seatId.match(/^A-(\d+)$/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num >= 13 && num <= 24) {
-              return `A2-${num - 12}`;
+          {
+            const match = seatId.match(/^A-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 13 && num <= 24) {
+                return `A2-${num - 12}`;
+              }
             }
           }
           return seatId;
