@@ -72,7 +72,30 @@
               return `D2-${num - 12}`;
             }
           }
-          // Add similar blocks for C2, B2, A2 if needed
+          // Map C-13..C-25 to C2-1..C2-13
+          match = seatId.match(/^C-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num >= 13 && num <= 25) {
+              return `C2-${num - 12}`;
+            }
+          }
+          // Map B-13..B-25 to B2-1..B2-13
+          match = seatId.match(/^B-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num >= 13 && num <= 25) {
+              return `B2-${num - 12}`;
+            }
+          }
+          // Map A-13..A-24 to A2-1..A2-12
+          match = seatId.match(/^A-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num >= 13 && num <= 24) {
+              return `A2-${num - 12}`;
+            }
+          }
           return seatId;
         }
         // Debug: print all seat elements and booked seats
@@ -3589,7 +3612,7 @@
                       <div class="seat green" data-id="B2-12">
                         <span>24</span>
                       </div>
-                      <div class="seat green" data-id="B2-12">
+                      <div class="seat green" data-id="B2-13">
                         <span>25</span>
                       </div>
                     </div>
@@ -4033,7 +4056,56 @@
       </div>
     </div>
 
-    <div class="screen">Stage</div>
+    <div
+      class="screen"
+      style="
+        width: 220px;
+        height: 38px;
+        margin: 18px auto 10px auto;
+        background: linear-gradient(
+          135deg,
+          #4e54c8 0%,
+          #8f94fb 60%,
+          #4e54c8 100%
+        );
+        clip-path: polygon(12% 100%, 88% 100%, 100% 0, 0 0);
+        box-shadow: 0 6px 18px rgba(60, 60, 120, 0.18), 0 1px 4px #6a6a9e;
+        border-top: 4px solid #3a3a7c;
+        border-bottom: 1px solid #222;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #fff;
+        letter-spacing: 2px;
+        position: relative;
+        perspective: 120px;
+      "
+    >
+      <span
+        style="
+          text-shadow: 0 2px 8px #fff, 0 1px 0 #4e54c8;
+          transform: skewX(-8deg) scaleY(1.08);
+          margin-bottom: 6px;
+          color: #fff;
+        "
+        >Stage</span
+      >
+      <div
+        style="
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: -10px;
+          height: 10px;
+          background: linear-gradient(90deg, #6a6a9e 0%, #8f94fb 100%);
+          border-radius: 0 0 12px 12px;
+          box-shadow: 0 2px 8px rgba(60, 60, 120, 0.12);
+          z-index: 0;
+        "
+      ></div>
+    </div>
 
     <script>
       // Basic seat selection logic (static replica)
