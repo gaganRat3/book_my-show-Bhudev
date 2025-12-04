@@ -38,6 +38,35 @@
     <script>
       // Mark booked seats as reserved and red, and disable click
       document.addEventListener("DOMContentLoaded", function () {
+        // Backend to frontend seat ID mapping for mid section rows (G2, F2, E2, ...)
+        function backendToFrontendSeatId(seatId) {
+          // Map G-13..G-29 to G2-1..G2-17
+          let match = seatId.match(/^G-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num >= 13 && num <= 29) {
+              return `G2-${num - 12}`;
+            }
+          }
+          // Map F-13..F-28 to F2-1..F2-16
+          match = seatId.match(/^F-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num >= 13 && num <= 28) {
+              return `F2-${num - 12}`;
+            }
+          }
+          // Map E-13..E-27 to E2-1..E2-15 (if needed, extend for other rows)
+          match = seatId.match(/^E-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num >= 13 && num <= 27) {
+              return `E2-${num - 12}`;
+            }
+          }
+          // Add similar blocks for D2, C2, B2, A2 if needed
+          return seatId;
+        }
         // Debug: print all seat elements and booked seats
         const bookedSeats = window.bookedSeats || [];
         console.log("Booked seats from backend:", bookedSeats);
@@ -107,7 +136,8 @@
         // Mark all booked seats
         let markedCount = 0;
         bookedSeats.forEach(function (seatLabel) {
-          if (markSeatAsBooked(seatLabel)) {
+          const mappedLabel = backendToFrontendSeatId(seatLabel);
+          if (markSeatAsBooked(mappedLabel)) {
             markedCount++;
           }
         });
@@ -3367,46 +3397,46 @@
                         <span>13</span>
                       </div>
 
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-2">
                         <span>14</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-3">
                         <span>15</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-4">
                         <span>16</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-5">
                         <span>17</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-6">
                         <span>18</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-7">
                         <span>19</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-8">
                         <span>20</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="E2-9">
                         <span>21</span>
                       </div>
-                      <div class="seat green" data-id="E2-2">
+                      <div class="seat green" data-id="E2-10">
                         <span>22</span>
                       </div>
-                      <div class="seat green" data-id="E2-3">
+                      <div class="seat green" data-id="E2-11">
                         <span>23</span>
                       </div>
-                      <div class="seat green" data-id="E2-4">
+                      <div class="seat green" data-id="E2-12">
                         <span>24</span>
                       </div>
-                      <div class="seat green" data-id="E2-5">
+                      <div class="seat green" data-id="E2-13">
                         <span>25</span>
                       </div>
-                      <div class="seat green" data-id="E2-6">
+                      <div class="seat green" data-id="E2-14">
                         <span>26</span>
                       </div>
-                      <div class="seat green" data-id="E2-7">
+                      <div class="seat green" data-id="E2-15">
                         <span>27</span>
                       </div>
                     </div>
@@ -3417,47 +3447,47 @@
                   <div class="row-horizontal-alt">
                     <div class="row-label-left-alt">D</div>
                     <div class="seats-horizontal-alt">
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-1">
                         <span>13</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-2">
                         <span>14</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-3">
                         <span>15</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-4">
                         <span>16</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-5">
                         <span>17</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-6">
                         <span>18</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-7">
                         <span>19</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-8">
                         <span>20</span>
                       </div>
-                      <div class="seat green" data-id="E2-1">
+                      <div class="seat green" data-id="D2-9">
                         <span>21</span>
                       </div>
 
-                      <div class="seat green" data-id="E2-2">
+                      <div class="seat green" data-id="D2-10">
                         <span>22</span>
                       </div>
-                      <div class="seat green" data-id="E2-3">
+                      <div class="seat green" data-id="D2-11">
                         <span>23</span>
                       </div>
-                      <div class="seat green" data-id="E2-4">
+                      <div class="seat green" data-id="D2-12">
                         <span>24</span>
                       </div>
-                      <div class="seat green" data-id="E2-5">
+                      <div class="seat green" data-id="D2-13">
                         <span>25</span>
                       </div>
-                      <div class="seat green" data-id="E2-6">
+                      <div class="seat green" data-id="D2-14">
                         <span>26</span>
                       </div>
                     </div>
@@ -3562,40 +3592,40 @@
                   <div class="row-horizontal-alt">
                     <div class="row-label-left-alt">A</div>
                     <div class="seats-horizontal-alt">
-                      <div class="seat green" data-id="B2-1">
+                      <div class="seat green" data-id="A2-1">
                         <span>13</span>
                       </div>
-                      <div class="seat green" data-id="B2-2">
+                      <div class="seat green" data-id="A2-2">
                         <span>14</span>
                       </div>
-                      <div class="seat green" data-id="B2-3">
+                      <div class="seat green" data-id="A2-3">
                         <span>15</span>
                       </div>
-                      <div class="seat green" data-id="B2-4">
+                      <div class="seat green" data-id="A2-4">
                         <span>16</span>
                       </div>
-                      <div class="seat green" data-id="B2-5">
+                      <div class="seat green" data-id="A2-5">
                         <span>17</span>
                       </div>
-                      <div class="seat green" data-id="B2-6">
+                      <div class="seat green" data-id="A2-6">
                         <span>18</span>
                       </div>
-                      <div class="seat green" data-id="B2-7">
+                      <div class="seat green" data-id="A2-7">
                         <span>19</span>
                       </div>
-                      <div class="seat green" data-id="B2-8">
+                      <div class="seat green" data-id="A2-8">
                         <span>20</span>
                       </div>
-                      <div class="seat green" data-id="B2-9">
+                      <div class="seat green" data-id="A2-9">
                         <span>21</span>
                       </div>
-                      <div class="seat green" data-id="B2-10">
+                      <div class="seat green" data-id="A2-10">
                         <span>22</span>
                       </div>
-                      <div class="seat green" data-id="B2-11">
+                      <div class="seat green" data-id="A2-11">
                         <span>23</span>
                       </div>
-                      <div class="seat green" data-id="B2-12">
+                      <div class="seat green" data-id="A2-12">
                         <span>24</span>
                       </div>
                     </div>

@@ -44,18 +44,17 @@ def seat_selection(request):
 		# Clear any previous seat selections for this user
 		SelectedSeat.objects.filter(user=user).delete()
 		
+		from core.seat_utils import normalize_seat_id
 		for seat_num in selected_seat_labels:
 			seat_num_clean = seat_num.strip()
+			normalized_seat_id = normalize_seat_id(seat_num_clean)
 			try:
-				# Use the exact data-id value for seat_number
-				seat = Seat.objects.get(seat_number=seat_num_clean)
-				# Check if seat is already booked by someone else
+				seat = Seat.objects.get(seat_number=normalized_seat_id)
 				if seat.is_booked:
-					return HttpResponse(f"Seat {seat_num_clean} is already booked. Please refresh and select different seats.", status=400)
-				# Save to SelectedSeat but DON'T mark is_booked yet (pending payment)
+					return HttpResponse(f"Seat {normalized_seat_id} is already booked. Please refresh and select different seats.", status=400)
 				SelectedSeat.objects.create(seat=seat, user=user, price=seat.price)
 			except Seat.DoesNotExist:
-				missing_seats.append(seat_num_clean)
+				missing_seats.append(normalized_seat_id)
 		if missing_seats:
 			# Log missing seats and show a friendly error
 			return HttpResponse(f"The following seats do not exist: {', '.join(missing_seats)}", status=400)
