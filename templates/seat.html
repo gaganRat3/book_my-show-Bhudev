@@ -64,7 +64,15 @@
               return `E2-${num - 12}`;
             }
           }
-          // Add similar blocks for D2, C2, B2, A2 if needed
+          // Map D-13..D-26 to D2-1..D2-14
+          match = seatId.match(/^D-(\d+)$/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num >= 13 && num <= 26) {
+              return `D2-${num - 12}`;
+            }
+          }
+          // Add similar blocks for C2, B2, A2 if needed
           return seatId;
         }
         // Debug: print all seat elements and booked seats
