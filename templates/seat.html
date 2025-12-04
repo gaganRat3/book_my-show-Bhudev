@@ -5,34 +5,55 @@
       // Parse seat data from Django template (comes as JSON strings)
       try {
         var seatPricesRaw = "{{ seat_prices|escapejs }}";
-        var bookedSeatsRaw = "{{ booked_seats|escapejs }}";
+        var bookedSeatsRaw = {{ booked_seats|safe }};
+        var heldSeatsRaw = {{ held_seats|safe }};
+        var userHeldSeatsRaw = {{ user_held_seats|safe }};
 
         console.log(
           "Raw seat_prices from server:",
           seatPricesRaw.substring(0, 100)
         );
         console.log("Raw booked_seats from server:", bookedSeatsRaw);
+        console.log("Raw held_seats from server:", heldSeatsRaw);
+        console.log("Raw user_held_seats from server:", userHeldSeatsRaw);
+
+        // DETAILED HELD SEATS DEBUGGING
+        console.log("[HELD SEATS DEBUG] held_seats type:", typeof heldSeatsRaw, "length:", heldSeatsRaw ? heldSeatsRaw.length : 'null');
+        console.log("[HELD SEATS DEBUG] user_held_seats type:", typeof userHeldSeatsRaw, "length:", userHeldSeatsRaw ? userHeldSeatsRaw.length : 'null');
 
         window.seatPrices = JSON.parse(seatPricesRaw);
-        window.bookedSeats = JSON.parse(bookedSeatsRaw);
+        window.bookedSeats = bookedSeatsRaw;
+        window.heldSeats = heldSeatsRaw;
+        window.userHeldSeats = userHeldSeatsRaw;
 
-        console.log(
-          "✓ Parsed seatPrices:",
-          Object.keys(window.seatPrices).length,
-          "seats"
-        );
+        // User seat status and hold duration
+        window.userSeatStatus = JSON.parse('{{ user_seat_status|escapejs }}');
+        window.holdDurationMinutes = {{ hold_duration_minutes }};
+        window.currentUserId = {{ current_user_id }};
+
+        console.log("✓ Parsed seatPrices:", Object.keys(window.seatPrices).length, "seats");
         console.log("✓ Parsed bookedSeats:", window.bookedSeats);
-        console.log(
-          "✓ bookedSeats is Array:",
-          Array.isArray(window.bookedSeats)
-        );
-        console.log("✓ bookedSeats length:", window.bookedSeats.length);
+        console.log("✓ Parsed heldSeats:", window.heldSeats);
+        console.log("✓ Parsed userHeldSeats:", window.userHeldSeats);
+        console.log("✓ User seat status:", window.userSeatStatus);
+
+        // Debug: Show what seats are in each category
+        if (window.heldSeats && window.heldSeats.length > 0) {
+          console.log("🟡 Seats held by OTHER users:", window.heldSeats);
+        }
+        if (window.userHeldSeats && window.userHeldSeats.length > 0) {
+          console.log("🟢 Seats held by CURRENT user:", window.userHeldSeats);
+        }
       } catch (e) {
         console.error("✗ Error parsing seat data:", e);
         console.error("✗ seatPricesRaw:", seatPricesRaw);
         console.error("✗ bookedSeatsRaw:", bookedSeatsRaw);
         window.seatPrices = {};
         window.bookedSeats = [];
+        window.heldSeats = [];
+        window.userHeldSeats = [];
+        window.userSeatStatus = null;
+        window.holdDurationMinutes = 10;
       }
     </script>
     <script>
@@ -238,7 +259,9 @@
               "orange",
               "purple",
               "teal",
-              "yellow"
+              "yellow",
+              "held",
+              "user-held"
             );
             seatElement.style.pointerEvents = "none";
             seatElement.style.cursor = "not-allowed";
@@ -249,17 +272,244 @@
           }
         }
 
-        // Mark all booked seats
-        let markedCount = 0;
-        bookedSeats.forEach(function (seatLabel) {
+        // Function to update seat status based on new reservation system
+        function updateSeatStatus(seatElement, status) {
+          // Remove all status classes
+          seatElement.classList.remove(
+            "reserved",
+            "red",
+            "selected",
+            "green",
+            "blue",
+            "orange",
+            "purple",
+            "teal",
+            "yellow",
+            "held",
+            "user-held"
+          );
+
+          switch (status) {
+            case "booked":
+              seatElement.classList.add("reserved", "red");
+              seatElement.style.pointerEvents = "none";
+              seatElement.style.cursor = "not-allowed";
+              seatElement.style.animation = "seatBooked 0.5s ease";
+              break;
+            case "held":
+              seatElement.classList.add("held");
+              seatElement.style.pointerEvents = "none";
+              seatElement.style.cursor = "not-allowed";
+              seatElement.style.backgroundColor = "#ff6600" + " !important";
+              seatElement.style.opacity = "1";
+              seatElement.style.border = "3px solid #ff0000";
+              seatElement.style.color = "white";
+              console.log(`[HELD SEAT] Applied held styling to`, seatElement);
+              break;
+            case "available":
+              seatElement.style.pointerEvents = "auto";
+              seatElement.style.cursor = "pointer";
+              seatElement.style.backgroundColor = "";
+              seatElement.style.opacity = "";
+              seatElement.style.animation = "seatReleased 0.3s ease";
+              break;
+          }
+        }
+
+        // Function to mark seat as held by current user
+        function markSeatAsUserHeld(seatLabel) {
+          const seatElement = findSeatElement(seatLabel);
+          if (seatElement) {
+            seatElement.classList.add("user-held", "selected");
+            seatElement.style.backgroundColor = "#4CAF50";
+            seatElement.style.opacity = "0.8";
+            console.log("✓ Marked as user held:", seatLabel);
+            return true;
+          }
+          return false;
+        }
+
+        // STEP 1: Mark held seats by other users FIRST
+        let heldCount = 0;
+        console.log(
+          `[REFRESH FIX] STEP 1: Marking ${heldSeats.length} held seats:`,
+          heldSeats
+        );
+        heldSeats.forEach(function (seatLabel) {
           const mappedLabel = backendToFrontendSeatId(seatLabel);
-          if (markSeatAsBooked(mappedLabel)) {
-            markedCount++;
+          console.log(
+            `[HELD DEBUG] Processing held seat: ${seatLabel} -> ${mappedLabel}`
+          );
+          const seatElement = findSeatElement(mappedLabel);
+          if (seatElement) {
+            console.log(
+              `[HELD DEBUG] Found element for ${mappedLabel}, before styling:`,
+              seatElement.style.backgroundColor
+            );
+            updateSeatStatus(seatElement, "held");
+            console.log(
+              `[HELD DEBUG] After styling:`,
+              seatElement.style.backgroundColor,
+              seatElement.className
+            );
+            heldCount++;
+            console.log(
+              `[REFRESH FIX] Successfully marked ${mappedLabel} as held`
+            );
+          } else {
+            console.error(
+              `[HELD DEBUG] FAILED to find element for ${mappedLabel}`
+            );
           }
         });
         console.log(
-          `Successfully marked ${markedCount} out of ${bookedSeats.length} booked seats`
+          `[REFRESH FIX] STEP 1 COMPLETE: Successfully marked ${heldCount} seats as held by other users`
         );
+
+        // STEP 2: Mark user's held seats SECOND
+        let userHeldCount = 0;
+        console.log(
+          `[REFRESH FIX] STEP 2: Marking ${userHeldSeats.length} user held seats:`,
+          userHeldSeats
+        );
+        userHeldSeats.forEach(function (seatLabel) {
+          const mappedLabel = backendToFrontendSeatId(seatLabel);
+          if (markSeatAsUserHeld(mappedLabel)) {
+            userHeldCount++;
+            console.log(`[REFRESH FIX] Marked ${mappedLabel} as user held`);
+          }
+        });
+        console.log(
+          `[REFRESH FIX] STEP 2 COMPLETE: Successfully marked ${userHeldCount} seats as held by current user`
+        );
+
+        // STEP 3: Mark all booked seats LAST (highest priority)
+        let markedCount = 0;
+        console.log(
+          `[REFRESH FIX] STEP 3: Marking ${bookedSeats.length} booked seats (FINAL):`,
+          bookedSeats
+        );
+
+        bookedSeats.forEach(function (seatLabel) {
+          const mappedLabel = backendToFrontendSeatId(seatLabel);
+          console.log(
+            `[REFRESH FIX] Processing booked seat: ${seatLabel} -> ${mappedLabel}`
+          );
+
+          const seatElement = findSeatElement(mappedLabel);
+          if (seatElement) {
+            console.log(
+              `[REFRESH FIX] Found seat element for ${mappedLabel}, current classes before booking:`,
+              seatElement.className
+            );
+            // Force mark as booked (this should override any held status)
+            seatElement.classList.remove(
+              "held",
+              "user-held",
+              "selected",
+              "green",
+              "blue",
+              "orange",
+              "purple",
+              "teal",
+              "yellow"
+            );
+            seatElement.classList.add("reserved", "red");
+            seatElement.style.pointerEvents = "none";
+            seatElement.style.cursor = "not-allowed";
+            console.log(
+              `[REFRESH FIX] After marking booked, classes:`,
+              seatElement.className
+            );
+            markedCount++;
+          } else {
+            console.error(
+              `[REFRESH FIX] ERROR: Could not find seat element for ${mappedLabel}`
+            );
+          }
+        });
+        console.log(
+          `[REFRESH FIX] STEP 3 COMPLETE: Successfully marked ${markedCount} out of ${bookedSeats.length} booked seats`
+        );
+
+        // FINAL VERIFICATION: Check that ALL seat types are still marked correctly
+        setTimeout(function () {
+          console.log(
+            `[REFRESH FIX] FINAL VERIFICATION: Checking all seats are still marked...`
+          );
+
+          // Check booked seats
+          let verifiedBooked = 0;
+          bookedSeats.forEach(function (seatLabel) {
+            const mappedLabel = backendToFrontendSeatId(seatLabel);
+            const seatElement = findSeatElement(mappedLabel);
+            if (
+              seatElement &&
+              seatElement.classList.contains("reserved") &&
+              seatElement.classList.contains("red")
+            ) {
+              verifiedBooked++;
+            } else {
+              console.error(
+                `[REFRESH FIX] BOOKED VERIFICATION FAILED: ${mappedLabel} is not properly marked as booked!`
+              );
+              if (seatElement) {
+                console.error(
+                  `[REFRESH FIX] Current classes:`,
+                  seatElement.className
+                );
+                markSeatAsBooked(mappedLabel);
+                console.log(`[REFRESH FIX] Re-marked ${mappedLabel} as booked`);
+              }
+            }
+          });
+
+          // Check held seats (by others)
+          let verifiedHeld = 0;
+          heldSeats.forEach(function (seatLabel) {
+            const mappedLabel = backendToFrontendSeatId(seatLabel);
+            const seatElement = findSeatElement(mappedLabel);
+            console.log(`[VERIFICATION] Checking held seat ${mappedLabel}:`, {
+              element: !!seatElement,
+              hasHeldClass: seatElement
+                ? seatElement.classList.contains("held")
+                : false,
+              backgroundColor: seatElement
+                ? seatElement.style.backgroundColor
+                : "no element",
+              allClasses: seatElement ? seatElement.className : "no element",
+            });
+
+            if (
+              seatElement &&
+              (seatElement.classList.contains("held") ||
+                seatElement.style.backgroundColor.includes("ff6600"))
+            ) {
+              verifiedHeld++;
+              console.log(`[VERIFICATION] ✓ ${mappedLabel} correctly held`);
+            } else {
+              console.error(
+                `[VERIFICATION] ✗ HELD SEAT FAILED: ${mappedLabel}`
+              );
+              if (seatElement) {
+                // Force re-apply held styling
+                updateSeatStatus(seatElement, "held");
+                console.log(
+                  `[VERIFICATION] Re-applied held styling to ${mappedLabel}`
+                );
+                verifiedHeld++;
+              }
+            }
+          });
+
+          console.log(`[REFRESH FIX] VERIFICATION COMPLETE:`);
+          console.log(
+            `  Booked seats: ${verifiedBooked}/${bookedSeats.length} correctly displayed`
+          );
+          console.log(
+            `  Held seats: ${verifiedHeld}/${heldSeats.length} correctly displayed`
+          );
+        }, 1000); // Check after 1 second to allow all processing to complete
 
         // WebSocket connection for real-time seat updates
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -276,17 +526,68 @@
           const data = JSON.parse(event.data);
           console.log("[WebSocket] Received:", data);
 
+          // Handle old seat_update format for backward compatibility
           if (data.type === "seat_update" && data.seats) {
-            // Mark seats as booked in real-time
             data.seats.forEach(function (seatNumber) {
-              if (markSeatAsBooked(seatNumber)) {
-                // Add visual feedback animation
-                const seatElement = document.querySelector(
-                  `.seat[data-id="${seatNumber}"]`
-                );
+              const mappedSeatId = backendToFrontendSeatId(seatNumber);
+              if (markSeatAsBooked(mappedSeatId)) {
+                const seatElement = findSeatElement(mappedSeatId);
                 if (seatElement) {
                   seatElement.style.animation = "seatBooked 0.5s ease";
                 }
+              }
+            });
+          }
+
+          // Handle new seat_status_update format
+          if (data.type === "seat_status_update" && data.seats && data.status) {
+            console.log(
+              `[WebSocket] Processing ${data.status} update for user_id ${data.user_id}, current user: ${window.currentUserId}`
+            );
+
+            data.seats.forEach(function (seatNumber) {
+              // Use the seat mapping function to find the correct frontend seat ID
+              const mappedSeatId = backendToFrontendSeatId(seatNumber);
+              const seatElement = findSeatElement(mappedSeatId);
+              if (seatElement) {
+                // PROTECTION: Never override booked seats with WebSocket updates
+                if (
+                  seatElement.classList.contains("reserved") &&
+                  seatElement.classList.contains("red")
+                ) {
+                  console.log(
+                    `[WebSocket] PROTECTED: Ignoring update for booked seat ${seatNumber} (${data.status})`
+                  );
+                  return; // Skip this seat - it's booked and should not be changed
+                }
+
+                // Handle held seats with user context
+                if (data.status === "held") {
+                  if (data.user_id && data.user_id === window.currentUserId) {
+                    // This is the current user's hold - style as user-held (green)
+                    console.log(
+                      `[WebSocket] Marking ${seatNumber} as held by current user`
+                    );
+                    markSeatAsUserHeld(mappedSeatId);
+                  } else {
+                    // This is held by another user - style as held (orange)
+                    console.log(
+                      `[WebSocket] Marking ${seatNumber} as held by other user (${data.user_id})`
+                    );
+                    updateSeatStatus(seatElement, "held");
+                  }
+                } else {
+                  // Handle booked/available normally
+                  updateSeatStatus(seatElement, data.status);
+                }
+
+                console.log(
+                  `[WebSocket] Updated seat ${seatNumber} -> ${mappedSeatId} to ${data.status}`
+                );
+              } else {
+                console.warn(
+                  `[WebSocket] Could not find seat element for ${seatNumber} (mapped: ${mappedSeatId})`
+                );
               }
             });
           }
@@ -335,7 +636,7 @@
         padding: 0 5px;
       }
 
-      /* Animation for real-time seat booking */
+      /* Animations for seat status changes */
       @keyframes seatBooked {
         0% {
           transform: scale(1);
@@ -347,6 +648,58 @@
         100% {
           transform: scale(1);
         }
+      }
+
+      @keyframes seatReleased {
+        0% {
+          transform: scale(1.1);
+          box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: none;
+        }
+      }
+
+      @keyframes seatHeld {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+      }
+
+      /* Seat hold styling */
+      .seat.held {
+        background: linear-gradient(45deg, #ffa500, #ff8c00) !important;
+        opacity: 0.8 !important;
+        border: 2px solid #ff8c00 !important;
+        animation: seatHeld 0.4s ease;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
+      }
+
+      .seat.held::after {
+        content: "⏳";
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 8px;
+        color: #fff;
+      }
+
+      .seat.user-held {
+        background: linear-gradient(45deg, #4caf50, #45a049) !important;
+        opacity: 0.9 !important;
+        border: 2px solid #2e7d32 !important;
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.5) !important;
       }
       h1 {
         font-size: 20px;
@@ -4121,6 +4474,28 @@
                   <strong>Total price:</strong>
                   <span id="total-price">₹0</span>
                 </div>
+                <div
+                  id="hold-status"
+                  style="
+                    display: none;
+                    margin-top: 10px;
+                    padding: 8px;
+                    background: #fff3cd;
+                    border: 1px solid #ffeaa7;
+                    border-radius: 4px;
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 8px">
+                    <strong style="color: #856404">⏱️ Hold expires in:</strong>
+                    <span
+                      id="countdown-timer"
+                      style="font-weight: bold; color: #d63384"
+                    ></span>
+                  </div>
+                  <div style="font-size: 12px; color: #6c757d; margin-top: 4px">
+                    Complete payment to secure your seats
+                  </div>
+                </div>
                 <input
                   type="hidden"
                   name="selected_seats"
@@ -4274,6 +4649,84 @@
           });
         }
         document.getElementById("total-price").textContent = `₹${total}`;
+      }
+
+      // Countdown timer functionality
+      let countdownInterval = null;
+
+      function startCountdownTimer() {
+        if (!window.userSeatStatus || !window.userSeatStatus.hold_expires_at) {
+          return;
+        }
+
+        const holdStatusEl = document.getElementById("hold-status");
+        const countdownEl = document.getElementById("countdown-timer");
+
+        if (!holdStatusEl || !countdownEl) {
+          return;
+        }
+
+        // Show hold status
+        holdStatusEl.style.display = "block";
+
+        // Clear existing interval
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+        }
+
+        const expiresAt = new Date(window.userSeatStatus.hold_expires_at);
+
+        countdownInterval = setInterval(() => {
+          const now = new Date();
+          const timeLeft = expiresAt - now;
+
+          if (timeLeft <= 0) {
+            // Hold expired
+            countdownEl.textContent = "EXPIRED";
+            countdownEl.style.color = "#dc3545";
+            holdStatusEl.style.background = "#f8d7da";
+            holdStatusEl.style.borderColor = "#dc3545";
+
+            // Disable form submission
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = "Hold Expired";
+
+            clearInterval(countdownInterval);
+
+            // Auto-refresh after 3 seconds
+            setTimeout(() => {
+              location.reload();
+            }, 3000);
+
+            return;
+          }
+
+          // Format time remaining
+          const minutes = Math.floor(timeLeft / (1000 * 60));
+          const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+          countdownEl.textContent = `${minutes}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
+
+          // Change color when time is running out
+          if (timeLeft < 60000) {
+            // Less than 1 minute
+            countdownEl.style.color = "#dc3545";
+          } else if (timeLeft < 120000) {
+            // Less than 2 minutes
+            countdownEl.style.color = "#fd7e14";
+          }
+        }, 1000);
+      }
+
+      // Initialize countdown if user has held seats
+      if (
+        window.userSeatStatus &&
+        window.userSeatStatus.held_seats &&
+        window.userSeatStatus.held_seats.length > 0
+      ) {
+        startCountdownTimer();
       }
 
       seats.forEach((s) => {

@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-zw3y**$+h^&j+i@0(-6@wew6)z%(qh=dngz83-o9(nh8n)239j
 DEBUG = True
 
 # Allow ngrok public link
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '817a7950f73e.ngrok-free.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '817a7950f73e.ngrok-free.app', 'testserver']
 
 # Public base URL for ngrok
 BASE_URL = 'https://817a7950f73e.ngrok-free.app'

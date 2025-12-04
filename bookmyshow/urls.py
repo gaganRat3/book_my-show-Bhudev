@@ -22,7 +22,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from core.views import landing_form, seat_selection, payment, booking_report, payment_confirmation
+from core.views import landing_form, seat_selection, payment, booking_report, payment_confirmation, go_home
 
 urlpatterns = [
     path('', landing_form, name='landing_form'),
@@ -31,4 +31,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/report/', booking_report, name='booking_report'),
     path('payment/confirmation/', payment_confirmation, name='payment_confirmation'),
+    path('go-home/', go_home, name='go_home'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -31,3 +31,12 @@ class SeatConsumer(AsyncWebsocketConsumer):
             'type': 'seat_update',
             'seats': event['seats']
         }))
+    
+    # Handle seat status updates (held, booked, available)
+    async def seat_status_update(self, event):
+        # Send seat status update to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'seat_status_update',
+            'seats': event['seats'],
+            'status': event['status']
+        }))

@@ -1,463 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Payment • Ticket</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment • Ticket</title>
 
-  <!-- Styles: BookMyShow-like card -->
-  <style>
-    :root{
-      --bms-red: #e91e24;
-      --bms-dark: #0d2538;
-      --accent-green: #00b142;
-      --muted: #6b7280;
-      --card-radius: 14px;
-      --card-width: 380px;
-      --glass: rgba(255,255,255,0.85);
-      --shadow: 0 10px 30px rgba(13,37,56,0.12);
-      --bg: linear-gradient(180deg, #fbfbfd 0%, #f3f6fb 100%);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-
-    html,body{
-      height:100%;
-      margin:0;
-      background: var(--bg);
-      color: #111827;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-
-    /* Centering layout */
-    .page-wrap{
-      min-height:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:28px 16px;
-    }
-
-    /* Main card */
-    .payment-card{
-      width:100%;
-      max-width: var(--card-width);
-      background: linear-gradient(180deg, #ffffff 0%, #fff 100%);
-      border-radius: var(--card-radius);
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(9,30,66,0.06);
-      overflow: hidden;
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* Top banner */
-    .card-top{
-      background: linear-gradient(90deg, rgba(233,30,36,0.12), rgba(0,0,0,0.02));
-      padding:18px 18px;
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .brand {
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .brand-logo {
-      width:42px;
-      height:42px;
-      border-radius:8px;
-      background: var(--bms-red);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#fff;
-      font-weight:800;
-      font-size:18px;
-      box-shadow: 0 6px 18px rgba(233,30,36,0.14);
-    }
-
-    .brand-text{
-      display:flex;
-      flex-direction:column;
-      line-height:1;
-    }
-
-    .brand-title{
-      font-size:16px;
-      font-weight:700;
-      color:var(--bms-dark);
-    }
-
-    .brand-sub{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    /* Content area */
-    .card-body{
-      padding:20px;
-      display:grid;
-      grid-template-columns: 1fr 120px;
-      gap:16px;
-      align-items:start;
-    }
-
-    /* Left column */
-    .info-block{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-
-    .section-title{
-      font-size:15px;
-      font-weight:700;
-      color:var(--bms-dark);
-      margin:0;
-    }
-
-    .whatsapp-box{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:10px;
-      border-radius:10px;
-      background:#fbfbfd;
-      border:1px solid #f1f3f5;
-    }
-
-    .whatsapp-number{
-      font-size:15px;
-      font-weight:700;
-      color:#0b6b34;
-    }
-
-    .desc{
-      font-size:13px;
-      color:var(--muted);
-      margin:0;
-    }
-
-    /* Seats summary (ticket-like) */
-    #selected-seats-summary{
-      background:linear-gradient(180deg,#fff,#fafcff);
-      border:1px dashed rgba(9,30,66,0.06);
-      padding:12px;
-      border-radius:10px;
-      font-size:14px;
-      color:#111827;
-    }
-
-    #selected-seats-summary ul{
-      margin:8px 0 0 14px;
-      padding:0;
-    }
-
-    #selected-seats-summary li{
-      margin:4px 0;
-      list-style: disc;
-    }
-
-    .total-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-top:10px;
-      font-weight:700;
-      font-size:15px;
-    }
-
-    .total-amount{
-      color: var(--bms-red);
-    }
-
-    /* Right column: QR + instructions */
-    .qr-block{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
-      padding:10px;
-      border-radius:10px;
-      background:linear-gradient(180deg,#ffffff,#f7fbff);
-      border:1px solid #f1f6ff;
-    }
-
-    .qr-block img{
-      width:120px;
-      height:120px;
-      object-fit:cover;
-      border-radius:8px;
-      background:#fff;
-      padding:6px;
-      border:1px solid #eeeeee;
-    }
-
-    .qr-note{
-      font-size:12px;
-      text-align:center;
-      color:var(--muted);
-    }
-
-    /* Form area (file upload + submit) */
-    .form-row{
-      padding:16px 20px 24px 20px;
-      display:flex;
-      gap:12px;
-      flex-direction:column;
-    }
-
-    label.file-label{
-      font-weight:600;
-      font-size:14px;
-      color:var(--bms-dark);
-    }
-
-    .file-input-wrap{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    input[type="file"]{
-      padding:8px 10px;
-      border-radius:10px;
-      border:1px solid #e6e9ef;
-      background:#fff;
-      font-size:13px;
-      width:100%;
-    }
-
-    .hint{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:6px;
-    }
-
-    .submit-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-top:8px;
-    }
-
-    button.payment-submit{
-      background:var(--accent-green);
-      color:#fff;
-      border:none;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:700;
-      cursor:pointer;
-      flex:1;
-      transition:transform .12s ease, box-shadow .12s ease;
-      box-shadow: 0 6px 20px rgba(0,177,66,0.12);
-    }
-
-    button.payment-submit:hover{ transform:translateY(-2px); }
-
-    a.back-home{
-      display:inline-block;
-      text-decoration:none;
-      background:var(--bms-red);
-      color:#fff;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:700;
-      text-align:center;
-      transition:opacity .12s ease;
-    }
-
-    a.back-home:hover{ opacity:0.92; }
-
-    .success-msg{
-      color:#0b6b34;
-      font-weight:700;
-      font-size:14px;
-      margin-top:6px;
-    }
-
-    /* Responsive */
-    @media (max-width:560px){
-      .card-body{
-        grid-template-columns: 1fr;
+    <!-- Styles: BookMyShow-like card -->
+    <style>
+      :root {
+        --bms-red: #e91e24;
+        --bms-dark: #0d2538;
+        --accent-green: #00b142;
+        --muted: #6b7280;
+        --card-radius: 14px;
+        --card-width: 380px;
+        --glass: rgba(255, 255, 255, 0.85);
+        --shadow: 0 10px 30px rgba(13, 37, 56, 0.12);
+        --bg: linear-gradient(180deg, #fbfbfd 0%, #f3f6fb 100%);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial;
       }
-      .qr-block{ order:-1; }
-      .payment-card{ width:100%; max-width:420px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="page-wrap">
-    <main class="payment-card" role="main" aria-labelledby="payment-heading">
-      <!-- Header -->
-      <header class="card-top">
-        <div class="brand" aria-hidden="true">
-          <div class="brand-logo">B</div>
-          <div class="brand-text">
-            <div class="brand-title">Payment Info</div>
-            <div class="brand-sub">Secure • Scan & Upload • Instant </div>
-          </div>
-        </div>
-      </header>
 
-      <!-- Body -->
-      <section class="card-body">
-        <!-- Left: info + seats -->
-        <div class="info-block" aria-live="polite">
-          <h2 id="payment-heading" class="section-title">Complete your payment</h2>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg);
+        color: #111827;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-         
+      /* Centering layout */
+      .page-wrap {
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 28px 16px;
+      }
 
-          <p class="desc">Scan the QR using UPI apps and upload the payment screenshot below. We'll verify and confirm your booking.</p>
+      /* Main card */
+      .payment-card {
+        width: 100%;
+        max-width: var(--card-width);
+        background: linear-gradient(180deg, #ffffff 0%, #fff 100%);
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(9, 30, 66, 0.06);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
 
-          <div id="selected-seats-summary" aria-label="Selected seats summary">
-            <!-- JS will populate -->
-            <div style="text-align:center;color:var(--muted);font-size:13px;padding:12px 6px;">
-              Loading selected seats...
+      /* Top banner */
+      .card-top {
+        background: linear-gradient(
+          90deg,
+          rgba(233, 30, 36, 0.12),
+          rgba(0, 0, 0, 0.02)
+        );
+        padding: 18px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        background: var(--bms-red);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+        font-size: 18px;
+        box-shadow: 0 6px 18px rgba(233, 30, 36, 0.14);
+      }
+
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+      }
+
+      .brand-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--bms-dark);
+      }
+
+      .brand-sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      /* Content area */
+      .card-body {
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1fr 120px;
+        gap: 16px;
+        align-items: start;
+      }
+
+      /* Left column */
+      .info-block {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--bms-dark);
+        margin: 0;
+      }
+
+      .whatsapp-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #fbfbfd;
+        border: 1px solid #f1f3f5;
+      }
+
+      .whatsapp-number {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0b6b34;
+      }
+
+      .desc {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* Seats summary (ticket-like) */
+      #selected-seats-summary {
+        background: linear-gradient(180deg, #fff, #fafcff);
+        border: 1px dashed rgba(9, 30, 66, 0.06);
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #111827;
+      }
+
+      #selected-seats-summary ul {
+        margin: 8px 0 0 14px;
+        padding: 0;
+      }
+
+      #selected-seats-summary li {
+        margin: 4px 0;
+        list-style: disc;
+      }
+
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        font-weight: 700;
+        font-size: 15px;
+      }
+
+      .total-amount {
+        color: var(--bms-red);
+      }
+
+      /* Right column: QR + instructions */
+      .qr-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background: linear-gradient(180deg, #ffffff, #f7fbff);
+        border: 1px solid #f1f6ff;
+      }
+
+      .qr-block img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        background: #fff;
+        padding: 6px;
+        border: 1px solid #eeeeee;
+      }
+
+      .qr-note {
+        font-size: 12px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      /* Form area (file upload + submit) */
+      .form-row {
+        padding: 16px 20px 24px 20px;
+        display: flex;
+        gap: 12px;
+        flex-direction: column;
+      }
+
+      label.file-label {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--bms-dark);
+      }
+
+      .file-input-wrap {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      input[type="file"] {
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #e6e9ef;
+        background: #fff;
+        font-size: 13px;
+        width: 100%;
+      }
+
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+
+      .submit-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 8px;
+      }
+
+      button.payment-submit {
+        background: var(--accent-green);
+        color: #fff;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        flex: 1;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+        box-shadow: 0 6px 20px rgba(0, 177, 66, 0.12);
+      }
+
+      button.payment-submit:hover {
+        transform: translateY(-2px);
+      }
+
+      a.back-home {
+        display: inline-block;
+        text-decoration: none;
+        background: var(--bms-red);
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        text-align: center;
+        transition: opacity 0.12s ease;
+      }
+
+      a.back-home:hover {
+        opacity: 0.92;
+      }
+
+      .success-msg {
+        color: #0b6b34;
+        font-weight: 700;
+        font-size: 14px;
+        margin-top: 6px;
+      }
+
+      .error-box {
+        background: rgba(233, 30, 36, 0.08);
+        border: 1px solid rgba(233, 30, 36, 0.3);
+        color: #b91c1c;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 14px;
+        font-size: 13px;
+      }
+
+      .error-box ul {
+        margin: 8px 0 0 16px;
+        padding: 0;
+      }
+
+      /* Responsive */
+      @media (max-width: 560px) {
+        .card-body {
+          grid-template-columns: 1fr;
+        }
+        .qr-block {
+          order: -1;
+        }
+        .payment-card {
+          width: 100%;
+          max-width: 420px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <main class="payment-card" role="main" aria-labelledby="payment-heading">
+        <!-- Header -->
+        <header class="card-top">
+          <div class="brand" aria-hidden="true">
+            <div class="brand-logo">B</div>
+            <div class="brand-text">
+              <div class="brand-title">Payment Info</div>
+              <div class="brand-sub">Secure • Scan & Upload • Instant</div>
             </div>
           </div>
-        </div>
+        </header>
 
-        <!-- Right: QR -->
-        <aside class="qr-block" aria-label="QR code for payment">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?data=whatsapp:+919876543210&size=300x300" alt="Payment QR code - scan with UPI or WhatsApp Pay" width="120" height="120" />
-          
-        </aside>
-      </section>
+        <!-- Body -->
+        <section class="card-body">
+          <!-- Left: info + seats -->
+          <div class="info-block" aria-live="polite">
+            <h2 id="payment-heading" class="section-title">
+              Complete your payment
+            </h2>
 
-      <!-- Form -->
-      <form method="post" enctype="multipart/form-data" class="form-row" novalidate>
-        <!-- Django CSRF token stays -->
-        {% csrf_token %}
+            <p class="desc">
+              Scan the QR using UPI apps and upload the payment screenshot
+              below. We'll verify and confirm your booking.
+            </p>
 
-        <div>
-          <label for="id_image" class="file-label">Upload Payment Screenshot</label>
-          <div class="file-input-wrap">
-            <input type="file" name="image" id="id_image" accept="image/*" required aria-required="true" />
+            <div
+              id="selected-seats-summary"
+              aria-label="Selected seats summary"
+            >
+              <!-- JS will populate -->
+              <div
+                style="
+                  text-align: center;
+                  color: var(--muted);
+                  font-size: 13px;
+                  padding: 12px 6px;
+                "
+              >
+                Loading selected seats...
+              </div>
+            </div>
           </div>
-          <div class="hint">Accepted: JPG, PNG. Max 5MB. Please include the UPI reference or number visible.</div>
-        </div>
 
-        <div class="submit-row">
-          <button type="submit" class="payment-submit">Submit</button>
-          <a class="back-home" href="/">Back to Home</a>
-        </div>
+          <!-- Right: QR -->
+          <aside class="qr-block" aria-label="QR code for payment">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?data=whatsapp:+919876543210&size=300x300"
+              alt="Payment QR code - scan with UPI or WhatsApp Pay"
+              width="120"
+              height="120"
+            />
+          </aside>
+        </section>
 
-        <!-- Success message placeholder (Django) -->
-        {% if success %}
-          <div class="success-msg" role="status">Payment screenshot submitted successfully!</div>
-        {% endif %}
-      </form>
-    </main>
-  </div>
+        <!-- Form -->
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          class="form-row"
+          novalidate
+        >
+          <!-- Django CSRF token stays -->
+          {% csrf_token %} {% if form.errors %}
+          <div class="error-box" role="alert">
+            <strong>We need a payment screenshot to continue:</strong>
+            <ul>
+              {% for field in form %} {% for error in field.errors %}
+              <li>{{ error }}</li>
+              {% endfor %} {% endfor %} {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
 
-  <!-- Script: populate selected seats summary (reads localStorage) -->
-  <script>
-    (function(){
-      function parsePrice(value){
-        if(value === undefined || value === null || value === '') return 0;
-        // allow numbers or strings like "250", "₹250", "250.00"
-        var s = String(value).replace(/[^\d.-]/g,'');
-        var n = parseFloat(s);
-        return isNaN(n) ? 0 : Math.round(n);
-      }
+          <div>
+            <label for="id_image" class="file-label"
+              >Upload Payment Screenshot</label
+            >
+            <div class="file-input-wrap">
+              <input
+                type="file"
+                name="image"
+                id="id_image"
+                accept="image/*"
+                required
+                aria-required="true"
+              />
+            </div>
+            <div class="hint">
+              Accepted: JPG, PNG. Max 5MB. Please include the UPI reference or
+              number visible.
+            </div>
+          </div>
 
-      function seatSortKey(seatStr){
-        // Handles formats: "A-10", "A10", "RowA-10", "B-2"
-        if(!seatStr) return seatStr;
-        var s = String(seatStr).trim();
-        // Try to split on '-'
-        if(s.indexOf('-') !== -1){
-          var parts = s.split('-');
-          return parts[0].padEnd(5,' ') + String(parts[1]).padStart(4,'0');
+          <div class="submit-row">
+            <button type="submit" class="payment-submit">Submit</button>
+            <a class="back-home" href="/">Back to Home</a>
+          </div>
+
+          <!-- Success message placeholder (Django) -->
+          {% if success %}
+          <div class="success-msg" role="status">
+            Payment screenshot submitted successfully!
+          </div>
+          {% endif %}
+        </form>
+      </main>
+    </div>
+
+    <!-- Script: populate selected seats summary (reads localStorage) -->
+    <script>
+      (function(){
+        function parsePrice(value){
+          if(value === undefined || value === null || value === '') return 0;
+          // allow numbers or strings like "250", "₹250", "250.00"
+          var s = String(value).replace(/[^\d.-]/g,'');
+          var n = parseFloat(s);
+          return isNaN(n) ? 0 : Math.round(n);
         }
-        // fallback: split alpha and numeric
-        var m = s.match(/^([A-Za-z]+)?\s*([0-9]+)$/);
-        if(m){
-          var row = m[1] || '';
-          var num = m[2] || '0';
-          return row.padEnd(5,' ') + String(num).padStart(4,'0');
-        }
-        return s;
-      }
 
-      function renderSelectedSeatsSummary(){
-        var cont = document.getElementById('selected-seats-summary');
-        var rawSeats = [];
-        var seatPrices = {};
-        try {
-          rawSeats = JSON.parse(localStorage.getItem('selectedSeats') || '[]');
-        } catch(e){
-          rawSeats = [];
-        }
-        try {
-          seatPrices = JSON.parse(localStorage.getItem('seatPrices') || '{}');
-        } catch(e){
-          seatPrices = {};
+        function seatSortKey(seatStr){
+          // Handles formats: "A-10", "A10", "RowA-10", "B-2"
+          if(!seatStr) return seatStr;
+          var s = String(seatStr).trim();
+          // Try to split on '-'
+          if(s.indexOf('-') !== -1){
+            var parts = s.split('-');
+            return parts[0].padEnd(5,' ') + String(parts[1]).padStart(4,'0');
+          }
+          // fallback: split alpha and numeric
+          var m = s.match(/^([A-Za-z]+)?\s*([0-9]+)$/);
+          if(m){
+            var row = m[1] || '';
+            var num = m[2] || '0';
+            return row.padEnd(5,' ') + String(num).padStart(4,'0');
+          }
+          return s;
         }
 
-        if(!Array.isArray(rawSeats) || rawSeats.length === 0){
-          cont.innerHTML = '<div style="text-align:center;color:var(--muted);padding:12px;"><strong>No seats selected.</strong></div>';
-          return;
+        function renderSelectedSeatsSummary(){
+          var cont = document.getElementById('selected-seats-summary');
+
+          // Use backend data instead of localStorage - with error handling
+          try {
+            var heldSeats = JSON.parse('{{ held_seats|escapejs }}');
+            var totalAmount = {{ total_amount|default:0 }};
+
+            console.log('Payment page data:', {
+              heldSeats: heldSeats,
+              totalAmount: totalAmount,
+              heldSeatsType: typeof heldSeats,
+              isArray: Array.isArray(heldSeats)
+            });
+
+            if(!Array.isArray(heldSeats) || heldSeats.length === 0){
+              cont.innerHTML = '<div style="text-align:center;color:var(--muted);padding:12px;"><strong>No seats selected.</strong><br><small>Please go back and select seats first.</small></div>';
+              return;
+            }
+          } catch (error) {
+            console.error('Error parsing payment data:', error);
+            cont.innerHTML = '<div style="text-align:center;color:var(--bms-red);padding:12px;"><strong>Error loading seat data</strong><br><small>Please try again.</small></div>';
+            return;
+          }
+
+          // Extract seat numbers and prices from held_seats array
+          var seats = heldSeats.map(function(seatInfo) {
+            return seatInfo.seat_number;
+          });
+
+          // Sort seats
+          seats.sort(function(a,b){
+            var ka = seatSortKey(a);
+            var kb = seatSortKey(b);
+            if(ka < kb) return -1;
+            if(ka > kb) return 1;
+            return 0;
+          });
+
+          var listHtml = '<ul aria-hidden="false">';
+          heldSeats.forEach(function(seatInfo){
+            var seat = seatInfo.seat_number;
+            var price = seatInfo.price || 0;
+            var priceHtml = price ? ' <span style="color:var(--bms-red);font-weight:600;">(₹' + price + ')</span>' : '';
+            listHtml += '<li>' + escapeHtml(seat) + priceHtml + '</li>';
+          });
+          listHtml += '</ul>';
+
+          var totalHtml = '';
+          if(totalAmount && totalAmount > 0){
+            totalHtml = '<div class="total-row"><div>Amount Payable</div><div class="total-amount">₹' + totalAmount + '</div></div>';
+          } else {
+            totalHtml = '<div class="total-row" style="color:var(--muted);font-weight:600;"><div>Amount Payable</div><div>—</div></div>';
+          }
+
+          cont.innerHTML = listHtml + totalHtml;
         }
 
-        // unique & clean
-        var seats = Array.from(new Set(rawSeats.map(String))).filter(Boolean);
+        /* small helper to escape HTML */
+        function escapeHtml(s){
+          if(!s) return '';
+          return s.replace(/[&<>"']/g, function(m){
+            return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+          });
+        }
 
-        // sort using key
-        seats.sort(function(a,b){
-          var ka = seatSortKey(a);
-          var kb = seatSortKey(b);
-          if(ka < kb) return -1;
-          if(ka > kb) return 1;
-          return 0;
+        // Run on load
+        document.addEventListener('DOMContentLoaded', renderSelectedSeatsSummary);
+
+        // Also listen for storage changes (when using other tab)
+        window.addEventListener('storage', function(e){
+          if(e.key === 'selectedSeats' || e.key === 'seatPrices'){
+            renderSelectedSeatsSummary();
+          }
         });
-
-        var total = 0;
-        var listHtml = '<ul aria-hidden="false">';
-        seats.forEach(function(seat){
-          var priceRaw = seatPrices && (seatPrices[seat] !== undefined) ? seatPrices[seat] : '';
-          var price = parsePrice(priceRaw);
-          if(price) total += price;
-          var priceHtml = price ? ' <span style="color:var(--bms-red);font-weight:600;">(₹' + price + ')</span>' : '';
-          listHtml += '<li>' + escapeHtml(seat) + priceHtml + '</li>';
-        });
-        listHtml += '</ul>';
-
-        var totalHtml = '';
-        if(total){
-          totalHtml = '<div class="total-row"><div>Amount Payable</div><div class="total-amount">₹' + total + '</div></div>';
-        } else {
-          totalHtml = '<div class="total-row" style="color:var(--muted);font-weight:600;"><div>Amount Payable</div><div>—</div></div>';
-        }
-
-        cont.innerHTML = listHtml + totalHtml;
-      }
-
-      /* small helper to escape HTML */
-      function escapeHtml(s){
-        if(!s) return '';
-        return s.replace(/[&<>"']/g, function(m){
-          return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
-        });
-      }
-
-      // Run on load
-      document.addEventListener('DOMContentLoaded', renderSelectedSeatsSummary);
-
-      // Also listen for storage changes (when using other tab)
-      window.addEventListener('storage', function(e){
-        if(e.key === 'selectedSeats' || e.key === 'seatPrices'){
-          renderSelectedSeatsSummary();
-        }
-      });
-    })();
-  </script>
-</body>
+      })();
+    </script>
+  </body>
 </html>

@@ -152,19 +152,31 @@ from .models import LandingFormData, PaymentScreenshot, Seat, SelectedSeat
 
 @admin.register(Seat)
 class SeatAdmin(admin.ModelAdmin):
-	list_display = ('seat_number', 'is_booked')
-
+	list_display = ('seat_number', 'status', 'is_booked', 'reserved_by_name')
+	list_filter = ('status', 'is_booked')
+	search_fields = ('seat_number',)
 	actions = ['mark_as_booked', 'mark_as_unbooked']
 
+	def reserved_by_name(self, obj):
+		return obj.reserved_by.name if obj.reserved_by else "-"
+	reserved_by_name.short_description = 'Reserved By'
+
 	def mark_as_booked(self, request, queryset):
-		updated = queryset.update(is_booked=True)
+		# Update both status and is_booked flag
+		updated = queryset.update(status='booked', is_booked=True)
 		self.message_user(request, f"{updated} seat(s) marked as booked.")
 	mark_as_booked.short_description = "Mark selected seats as booked"
 
 	def mark_as_unbooked(self, request, queryset):
-		updated = queryset.update(is_booked=False)
-		self.message_user(request, f"{updated} seat(s) marked as unbooked.")
-	mark_as_unbooked.short_description = "Mark selected seats as unbooked"
+		# Update both status and is_booked flag, and clear reservation info
+		updated = queryset.update(
+			status='available', 
+			is_booked=False, 
+			reserved_by=None, 
+			reserved_until=None
+		)
+		self.message_user(request, f"{updated} seat(s) marked as available.")
+	mark_as_unbooked.short_description = "Mark selected seats as available (unbooked)"
 
 ## Removed duplicate registration for LandingFormData; now only registered with SelectedSeatSummaryAdmin
 

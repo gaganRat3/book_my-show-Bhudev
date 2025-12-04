@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
 
 
 class LandingFormData(models.Model):
@@ -13,10 +15,63 @@ class PaymentScreenshot(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
 class Seat(models.Model):
+    SEAT_STATUS_CHOICES = [
+        ('available', 'Available'),
+        ('held', 'Temporarily Held'),
+        ('booked', 'Booked'),
+    ]
+    
     seat_number = models.CharField(max_length=10)
-    is_booked = models.BooleanField(default=False)
+    is_booked = models.BooleanField(default=False)  # Keep for backward compatibility
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
-    # Add more fields if needed for seat details
+    
+    # New reservation fields
+    status = models.CharField(max_length=20, choices=SEAT_STATUS_CHOICES, default='available')
+    reserved_until = models.DateTimeField(null=True, blank=True)
+    reserved_by = models.ForeignKey(LandingFormData, on_delete=models.SET_NULL, null=True, blank=True, related_name='held_seats')
+    
+    def is_available(self):
+        """Check if seat is truly available"""
+        if self.status == 'booked' or self.is_booked:
+            return False
+        if self.status == 'held' and self.reserved_until and timezone.now() < self.reserved_until:
+            return False
+        # If hold expired, automatically release it
+        if self.status == 'held' and self.reserved_until and timezone.now() >= self.reserved_until:
+            self.release_hold()
+        return True
+    
+    def hold_for_user(self, user, minutes=10):
+        """Hold seat for specified user and duration"""
+        if not self.is_available():
+            return False
+        self.status = 'held'
+        self.reserved_until = timezone.now() + timedelta(minutes=minutes)
+        self.reserved_by = user
+        self.save()
+        return True
+    
+    def release_hold(self):
+        """Release the hold on this seat - ONLY if it's actually held, never booked"""
+        if self.is_booked or self.status == 'booked':
+            print(f"[WARNING] Attempted to release hold on BOOKED seat {self.seat_number}! Ignoring.")
+            return
+        
+        self.status = 'available'
+        self.reserved_until = None
+        self.reserved_by = None
+        self.save()
+    
+    def book_seat(self):
+        """Convert held seat to booked"""
+        self.status = 'booked'
+        self.is_booked = True
+        self.reserved_until = None
+        # Keep reserved_by for tracking who booked it
+        self.save()
+    
+    def __str__(self):
+        return f"Seat {self.seat_number} - {self.status}"
 
 class SelectedSeat(models.Model):
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
@@ -31,45 +86,63 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 @receiver(post_save, sender='core.Seat')
-def broadcast_seat_booked(sender, instance, created, **kwargs):
-    """Broadcast seat booking to all connected WebSocket clients when is_booked changes"""
-    # Only broadcast if seat is marked as booked (not when created)
-    if instance.is_booked and not created:
+def broadcast_seat_status_change(sender, instance, created, **kwargs):
+    """Broadcast seat status changes to all connected WebSocket clients"""
+    if not created:  # Only broadcast changes, not creation
         channel_layer = get_channel_layer()
         seat_numbers = [instance.seat_number]
+        
+        # Determine status for broadcasting
+        if instance.status == 'booked' or instance.is_booked:
+            status = 'booked'
+        elif instance.status == 'held':
+            status = 'held'
+        else:
+            status = 'available'
+        
         async_to_sync(channel_layer.group_send)(
             'seat_updates',
             {
-                'type': 'seat_update',
-                'seats': seat_numbers
+                'type': 'seat_status_update',
+                'seats': seat_numbers,
+                'status': status
             }
         )
-        print(f"[WebSocket] Broadcasting seat booked: {seat_numbers}")
+        print(f"[WebSocket] Broadcasting seat {status}: {seat_numbers}")
 
 @receiver(post_delete, sender=LandingFormData)
-def unbook_seats_on_user_delete(sender, instance, **kwargs):
-    print(f"Signal triggered: Deleting user {instance.id} and unbooking seats.")
+def release_user_seats_on_delete(sender, instance, **kwargs):
+    """Release ONLY held seats when user is deleted - NEVER unbook paid seats"""
+    print(f"Signal triggered: Deleting user {instance.id} and releasing their HELD seats only.")
+    
+    # Release ONLY held seats (not booked seats)
+    held_seats = Seat.objects.filter(reserved_by=instance, status='held')
+    released_seat_numbers = []
+    for seat in held_seats:
+        released_seat_numbers.append(seat.seat_number)
+        seat.release_hold()
+        print(f"Released held seat: {seat.seat_number}")
+    
+    # Clean up SelectedSeat records but DO NOT unbook seats
     selected_seats = SelectedSeat.objects.filter(user=instance)
-    unbooked_seats = []
     for selected_seat in selected_seats:
         seat = selected_seat.seat
-        # Delete the SelectedSeat for this user
+        # Only log booked seats, don't unbook them
+        if seat.status == 'booked' or seat.is_booked:
+            print(f"Keeping booked seat: {seat.seat_number} (payment completed)")
         selected_seat.delete()
-        # If no other SelectedSeat exists for this seat, unbook it
-        if not SelectedSeat.objects.filter(seat=seat).exists():
-            print(f"Unbooking seat: {seat.seat_number}")
-            seat.is_booked = False
-            seat.save()
-            unbooked_seats.append(seat.seat_number)
     
-    # Broadcast unbooking to all clients
-    if unbooked_seats:
+    # Broadcast ONLY released held seats
+    if released_seat_numbers:
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             'seat_updates',
             {
-                'type': 'seat_update',
-                'seats': unbooked_seats
+                'type': 'seat_status_update',
+                'seats': released_seat_numbers,
+                'status': 'available'
             }
         )
-        print(f"[WebSocket] Broadcasting seats unbooked: {unbooked_seats}")
+        print(f"[WebSocket] Broadcasting held seats released: {released_seat_numbers}")
+    
+    print(f"User {instance.id} deletion complete - booked seats preserved.")
