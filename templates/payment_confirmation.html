@@ -1,63 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Payment Confirmation</title>
-  <style>
-    body { background: #f3f6fb; font-family: 'Segoe UI', Arial, sans-serif; color: #111827; margin: 0; }
-    .confirmation-card {
-      max-width: 400px;
-      margin: 60px auto;
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(13,37,56,0.12);
-      padding: 32px 24px;
-      text-align: center;
-    }
-    .success-icon {
-      font-size: 48px;
-      color: #00b142;
-      margin-bottom: 18px;
-    }
-    .success-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #0d2538;
-    }
-    .success-msg {
-      font-size: 16px;
-      color: #6b7280;
-      margin-bottom: 24px;
-    }
-    .back-home {
-      display: inline-block;
-      background: #e91e24;
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: opacity .12s ease;
-    }
-    .back-home:hover { opacity: 0.92; }
-  </style>
-</head>
-<body>
-  <div class="confirmation-card">
-    <div class="success-icon">&#10004;</div>
-    <div class="success-title">Payment Submitted!</div>
-    <div class="success-msg">Thank you for uploading your payment screenshot.<br>Your booking will be confirmed after verification.</div>
-    {% if selected_seats %}
-      <div style="margin:18px 0 8px 0;font-weight:600;color:#0d2538;">Your Selected Tickets:</div>
-      <ul style="list-style:none;padding:0;margin:0 0 18px 0;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment Confirmation</title>
+    <style>
+      body {
+        background: #f3f6fb;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #111827;
+        margin: 0;
+      }
+      .confirmation-card {
+        max-width: 400px;
+        margin: 60px auto;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(13, 37, 56, 0.12);
+        padding: 32px 24px;
+        text-align: center;
+      }
+      .success-icon {
+        font-size: 48px;
+        color: #00b142;
+        margin-bottom: 18px;
+      }
+      .success-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #0d2538;
+      }
+      .success-msg {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 24px;
+      }
+      .back-home {
+        display: inline-block;
+        background: #e91e24;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: opacity 0.12s ease;
+      }
+      .back-home:hover {
+        opacity: 0.92;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="confirmation-card">
+      <div class="success-icon">&#10004;</div>
+      <div class="success-title">Payment Submitted!</div>
+      <div class="success-msg">
+        Thank you for uploading your payment screenshot.<br />Your booking will
+        be confirmed after verification.
+      </div>
+      {% if selected_seats %}
+      <div style="margin: 18px 0 8px 0; font-weight: 600; color: #0d2538">
+        Your Selected Tickets:
+      </div>
+      <div
+        style="
+          margin: 0 0 18px 0;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          justify-content: center;
+        "
+      >
         {% for seat in selected_seats %}
-          <li style="font-size:15px;color:#00b142;font-weight:500;margin-bottom:4px;">{{ seat }}</li>
+        <span
+          style="
+            font-size: 15px;
+            color: #00b142;
+            font-weight: 500;
+            padding: 4px 12px;
+            background: #f3f6fb;
+            border-radius: 6px;
+          "
+          >{{ seat }}</span
+        >
         {% endfor %}
-      </ul>
-    {% endif %}
-    <a class="back-home" href="/">Back to Home</a>
-  </div>
-</body>
+      </div>
+      {% endif %}
+      <a class="back-home" href="/">Back to Home</a>
+    </div>
+  </body>
 </html>
