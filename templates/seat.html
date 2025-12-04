@@ -91,6 +91,26 @@
               }
             }
           }
+          // Map B-26..B-37 to BR-1..BR-12
+          {
+            const match = seatId.match(/^B-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 26 && num <= 37) {
+                return `BR-${num - 25}`;
+              }
+            }
+          }
+          // Map A-25..A-36 to AR-1..AR-12
+          {
+            const match = seatId.match(/^A-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 25 && num <= 36) {
+                return `AR-${num - 24}`;
+              }
+            }
+          }
           // Map G-13..G-29 to G2-1..G2-17
           {
             const match = seatId.match(/^G-(\d+)$/);
