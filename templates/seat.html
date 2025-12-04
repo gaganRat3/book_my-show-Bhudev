@@ -61,6 +61,36 @@
               }
             }
           }
+          // Map E-28..E-39 to ER-1..ER-12
+          {
+            const match = seatId.match(/^E-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 28 && num <= 39) {
+                return `ER-${num - 27}`;
+              }
+            }
+          }
+          // Map D-27..D-38 to DR-1..DR-12
+          {
+            const match = seatId.match(/^D-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 27 && num <= 38) {
+                return `DR-${num - 26}`;
+              }
+            }
+          }
+          // Map C-26..C-37 to CR-1..CR-12
+          {
+            const match = seatId.match(/^C-(\d+)$/);
+            if (match) {
+              const num = parseInt(match[1], 10);
+              if (num >= 26 && num <= 37) {
+                return `CR-${num - 25}`;
+              }
+            }
+          }
           // Map G-13..G-29 to G2-1..G2-17
           {
             const match = seatId.match(/^G-(\d+)$/);
@@ -4099,9 +4129,9 @@
         margin: 18px auto 10px auto;
         background: linear-gradient(
           135deg,
-          #4e54c8 0%,
-          #8f94fb 60%,
-          #4e54c8 100%
+          #000000ff 0%,
+          #adb0e2ff 60%,
+          #ffdbc8 100%
         );
         clip-path: polygon(12% 100%, 88% 100%, 100% 0, 0 0);
         box-shadow: 0 6px 18px rgba(60, 60, 120, 0.18), 0 1px 4px #6a6a9e;
