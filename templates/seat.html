@@ -1033,43 +1033,11 @@
         --top-gap-count: 25; /* number of gaps between seats */
         display: flex;
         justify-content: center; /* center the top main section horizontally */
+        margin: 0px 500px 0px;
       }
 
       /* Hide the native scroll bar while allowing touch scrolling for mobile when small adjustments are needed. */
-      @media (max-width: 768px) {
-        #top-main-section .seats-horizontal {
-          overflow-x: auto; /* allow user scroll if content still overflows */
-          scrollbar-width: none; /* hide scrollbar on Firefox */
-          -ms-overflow-style: none; /* hide scrollbar on IE and Edge */
-        }
-
-        /* compute width per seat so 26 seats fit into the available width of the container */
-        #top-main-section .seats-horizontal .seat {
-          width: calc(
-            (100% - 16px - calc(var(--top-gap-count) * var(--gap))) /
-              var(--top-seat-count)
-          );
-          aspect-ratio: 1/1; /* keep the circular shape */
-          min-width: 10px; /* don't let it collapse too small */
-          max-width: 22px; /* limit the width so it never gets abnormally big on mid screens */
-          font-size: clamp(6px, 1.5vw, 9px);
-          border-width: 1px;
-          box-sizing: border-box; /* ensure borders included in width calc */
-        }
-      }
-
-      /* For very small screens, reduce font-size and spacing slightly further */
-      @media (max-width: 420px) {
-        #top-main-section .seats-horizontal .seat {
-          width: calc(
-            (100% - 12px - calc(var(--top-gap-count) * (var(--gap) / 1))) /
-              var(--top-seat-count)
-          );
-          min-width: 8px;
-          font-size: clamp(5px, 1.8vw, 8px);
-          box-sizing: border-box; /* ensure borders included in width calc */
-        }
-      }
+      /* Z BLOCK IS NOW FIXED - NO RESPONSIVE CHANGES */
 
       /* Hide webkit scrollbar but keep native scroll for touch interactions */
       #top-main-section .seats-horizontal::-webkit-scrollbar {
@@ -1087,13 +1055,12 @@
         white-space: nowrap; /* keep the seats in a single line */
       }
 
-      /* Provide a sensible default seat size in the top-main section but allow media queries
-         to override sizes on smaller screens so the whole row can become visible. */
+      /* Fixed seat size in the top-main section - same on all screen sizes */
       #top-main-section .seats-horizontal .seat {
         width: var(--seat-size);
         height: var(--seat-size);
-        min-width: 10px; /* small fallback that media queries override */
-        flex: 0 0 auto; /* respects width/height, but allows media query sizing */
+        min-width: var(--seat-size); /* prevent shrinking */
+        flex: 0 0 auto; /* do not grow or shrink */
         box-sizing: border-box;
       }
 

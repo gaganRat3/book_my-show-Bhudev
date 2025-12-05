@@ -311,7 +311,7 @@ def booking_report(request):
 		)
 	from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 	page = request.GET.get('page', 1)
-	paginator = Paginator(list(qs), 10)  # 10 rows per page
+	paginator = Paginator(qs, 10)  # Paginate queryset directly
 	try:
 		paginated_qs = paginator.page(page)
 	except PageNotAnInteger:
