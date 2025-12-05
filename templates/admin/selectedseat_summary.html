@@ -69,16 +69,26 @@
     {% endfor %}
   </tbody>
 </table>
-<div style="margin-top:18px;text-align:center;">
-  <nav aria-label="Pagination" style="display:inline-block;">
-    <ul style="list-style:none;padding:0;margin:0;display:flex;justify-content:center;align-items:center;gap:6px;">
+<div style="margin-top:32px; display: flex; justify-content: center; align-items: center;">
+  <nav aria-label="Pagination" style="display: flex; gap: 12px;">
+    <ul style="list-style: none; padding: 0; margin: 0; display: flex; gap: 12px;">
+      {% if page_obj.has_previous %}
+        <li>
+          <a href="?search={{ search }}&page={{ page_obj.previous_page_number }}" style="padding: 12px 20px; border-radius: 6px; border: 1px solid #1976d2; background: #fff; color: #1976d2; text-decoration: none; font-weight: 600; font-size: 18px; box-shadow: 0 2px 8px rgba(25,118,210,0.04);">&laquo;</a>
+        </li>
+      {% endif %}
       {% for num in paginator.page_range %}
         {% if num == page_obj.number %}
-          <li><span style="padding:8px 16px;border-radius:4px;background:#1976d2;color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(25,118,210,0.08);">{{ num }}</span></li>
+          <li><span style="padding: 12px 20px; border-radius: 6px; background: #1976d2; color: #fff; font-weight: 700; font-size: 18px; box-shadow: 0 2px 8px rgba(25,118,210,0.12);">{{ num }}</span></li>
         {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
-          <li><a href="?search={{ search }}&page={{ num }}" style="padding:8px 16px;border-radius:4px;border:1px solid #1976d2;background:#fff;color:#1976d2;text-decoration:none;font-weight:600;box-shadow:0 2px 8px rgba(25,118,210,0.04);">{{ num }}</a></li>
+          <li><a href="?search={{ search }}&page={{ num }}" style="padding: 12px 20px; border-radius: 6px; border: 1px solid #1976d2; background: #fff; color: #1976d2; text-decoration: none; font-weight: 600; font-size: 18px; box-shadow: 0 2px 8px rgba(25,118,210,0.04);">{{ num }}</a></li>
         {% endif %}
       {% endfor %}
+      {% if page_obj.has_next %}
+        <li>
+          <a href="?search={{ search }}&page={{ page_obj.next_page_number }}" style="padding: 12px 20px; border-radius: 6px; border: 1px solid #1976d2; background: #fff; color: #1976d2; text-decoration: none; font-weight: 600; font-size: 18px; box-shadow: 0 2px 8px rgba(25,118,210,0.04);">&raquo;</a>
+        </li>
+      {% endif %}
     </ul>
   </nav>
 </div>

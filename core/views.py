@@ -320,12 +320,16 @@ def booking_report(request):
 		paginated_qs = paginator.page(paginator.num_pages)
 	final_report = []
 	for row in paginated_qs:
+		# Get user id for links
+		user_obj = LandingFormData.objects.filter(name=row['user__name'], phone=row['user__phone']).first()
+		user_id = user_obj.id if user_obj else ''
 		final_report.append({
 			'user': row['user__name'],
 			'phone': row['user__phone'],
 			'seats': row['seats'],
 			'total_paid': row['total_paid'],
 			'selected_at': row['selected_at'],
+			'id': user_id,
 		})
 	return render(request, 'admin/booking_report.html', {
 		'report': final_report,

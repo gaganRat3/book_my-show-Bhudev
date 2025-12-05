@@ -81,14 +81,20 @@ class SelectedSeatSummaryAdmin(admin.ModelAdmin):
 		return HttpResponse(template.render(context, request))
 
 	def selectedseat_summary_view(self, request):
+		from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+		search = request.GET.get('search', '').strip()
 		users = LandingFormData.objects.all()
+		if search:
+			users = users.filter(
+				models.Q(name__icontains=search) |
+				models.Q(phone__icontains=search)
+			)
 		report = []
 		for user in users:
 			seats = SelectedSeat.objects.filter(user=user)
 			seat_labels = [s.seat.seat_number for s in seats]
 			total_paid = sum(float(s.price or 0) for s in seats)
 			earliest = seats.order_by('selected_at').first().selected_at if seats.exists() else None
-			# Get latest payment screenshot for user (if any)
 			screenshot_url = None
 			payment = user.payments.order_by('-uploaded_at').first() if hasattr(user, 'payments') else None
 			if payment and payment.image:
@@ -102,8 +108,21 @@ class SelectedSeatSummaryAdmin(admin.ModelAdmin):
 				'selected_at': earliest,
 				'screenshot_url': screenshot_url,
 			})
+		page = request.GET.get('page', 1)
+		paginator = Paginator(report, 10)
+		try:
+			page_obj = paginator.page(page)
+		except PageNotAnInteger:
+			page_obj = paginator.page(1)
+		except EmptyPage:
+			page_obj = paginator.page(paginator.num_pages)
 		template = loader.get_template("admin/selectedseat_summary.html")
-		context = {"report": report}
+		context = {
+			"report": page_obj,
+			"paginator": paginator,
+			"page_obj": page_obj,
+			"search": search,
+		}
 		return HttpResponse(template.render(context, request))
 
 admin.site.register_view = lambda name, view, url=None: admin.site.get_urls().insert(0, path(url or name + '/', view, name=name))
