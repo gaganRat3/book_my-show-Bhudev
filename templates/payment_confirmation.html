@@ -56,8 +56,12 @@
       <div class="success-icon">&#10004;</div>
       <div class="success-title">Payment Submitted!</div>
       <div class="success-msg">
-        Thank you for uploading your payment screenshot.<br />Your booking will
-        be confirmed after verification.
+        {% if user and user.name %}
+        <span style="color: #0d2538; font-weight: 600">{{ user.name }}</span
+        >,<br />
+        {% endif %} Your payment has been received successfully!<br />
+        We appreciate your booking. You will receive a confirmation soon after
+        verification.<br />
       </div>
       {% if selected_seats %}
       <div style="margin: 18px 0 8px 0; font-weight: 600; color: #0d2538">

@@ -16,7 +16,14 @@ def payment_confirmation(request):
 		request.session.flush()
 		print("[Payment Confirmation] Session cleared after payment confirmation")
 	
-	return render(request, 'payment_confirmation.html', {'selected_seats': selected_seats})
+	context = {'selected_seats': selected_seats}
+	if user_id:
+		try:
+			user = LandingFormData.objects.get(id=user_id)
+			context['user'] = user
+		except LandingFormData.DoesNotExist:
+			pass
+	return render(request, 'payment_confirmation.html', context)
 
 from django.shortcuts import render, redirect
 from django.db.models import Sum, Min, F, Value
@@ -277,6 +284,7 @@ def payment(request):
 		'total_amount': total_amount,
 		'time_remaining_seconds': max(0, int(time_remaining)) if time_remaining else 0,
 		'hold_expires_at': user_status['hold_expires_at'],
+		'user': user,
 	}
 	
 	return render(request, 'payment.html', context)
@@ -289,19 +297,29 @@ class GroupConcat(Func):
 	template = '%(function)s(%(expressions)s)'
 
 def booking_report(request):
-	report = (
-		SelectedSeat.objects
-		.values('user__name', 'user__phone')
-		.annotate(
-			seats=GroupConcat('seat__seat_number'),
-			total_paid=Sum('price'),
-			selected_at=Min('selected_at')
+	search = request.GET.get('search', '').strip()
+	qs = SelectedSeat.objects.values('user__name', 'user__phone').annotate(
+		seats=GroupConcat('seat__seat_number'),
+		total_paid=Sum('price'),
+		selected_at=Min('selected_at')
+	).order_by('user__name')
+	if search:
+		qs = qs.filter(
+			models.Q(user__name__icontains=search) |
+			models.Q(user__phone__icontains=search) |
+			models.Q(seat__seat_number__icontains=search)
 		)
-		.order_by('user__name')
-	)
-	# Prepare context for template
+	from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+	page = request.GET.get('page', 1)
+	paginator = Paginator(list(qs), 10)  # 10 rows per page
+	try:
+		paginated_qs = paginator.page(page)
+	except PageNotAnInteger:
+		paginated_qs = paginator.page(1)
+	except EmptyPage:
+		paginated_qs = paginator.page(paginator.num_pages)
 	final_report = []
-	for row in report:
+	for row in paginated_qs:
 		final_report.append({
 			'user': row['user__name'],
 			'phone': row['user__phone'],
@@ -309,4 +327,9 @@ def booking_report(request):
 			'total_paid': row['total_paid'],
 			'selected_at': row['selected_at'],
 		})
-	return render(request, 'admin/booking_report.html', {'report': final_report})
+	return render(request, 'admin/booking_report.html', {
+		'report': final_report,
+		'search': search,
+		'paginator': paginator,
+		'page_obj': paginated_qs,
+	})

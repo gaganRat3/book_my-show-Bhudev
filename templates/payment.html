@@ -496,13 +496,18 @@
 
           <div class="submit-row">
             <button type="submit" class="payment-submit">Submit</button>
-            <a class="back-home" href="/">Back to Home</a>
+            <a class="back-home" href="{% url 'seat_selection' %}">Back to Seat</a>
           </div>
 
           <!-- Success message placeholder (Django) -->
           {% if success %}
           <div class="success-msg" role="status">
-            Payment screenshot submitted successfully!
+            Payment screenshot submitted successfully!<br />
+            {% if user and user.username %}
+            <span style="color: var(--bms-dark); font-weight: 600">
+              {{ user.username }}</span
+            >
+            {% endif %}
           </div>
           {% endif %}
         </form>
