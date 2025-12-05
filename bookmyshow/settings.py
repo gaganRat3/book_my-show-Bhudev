@@ -1,8 +1,7 @@
 # CSRF trusted origins for ngrok
 CSRF_TRUSTED_ORIGINS = [
-    # Include the ngrok host without a trailing slash.
-    'https://817a7950f73e.ngrok-free.app',
-    # Optionally allow all subdomains of the ngrok-free.dev domain during development.
+    # Include the new ngrok host without a trailing slash.
+    'https://keyla-mirier-pebbly.ngrok-free.dev',
     'https://*.ngrok-free.dev',
 ]
 """
@@ -33,10 +32,10 @@ SECRET_KEY = 'django-insecure-zw3y**$+h^&j+i@0(-6@wew6)z%(qh=dngz83-o9(nh8n)239j
 DEBUG = True
 
 # Allow ngrok public link
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '817a7950f73e.ngrok-free.app', 'testserver']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '817a7950f73e.ngrok-free.app', 'testserver', 'keyla-mirier-pebbly.ngrok-free.dev']
 
 # Public base URL for ngrok
-BASE_URL = 'https://817a7950f73e.ngrok-free.app'
+BASE_URL = 'https://keyla-mirier-pebbly.ngrok-free.dev'
 
 # Application definition
 

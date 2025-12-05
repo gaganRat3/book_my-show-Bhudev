@@ -230,13 +230,76 @@
         flex-wrap: wrap;
       }
 
-      input[type="file"] {
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid #e6e9ef;
-        background: #fff;
-        font-size: 13px;
+      /* Custom file upload styling */
+      .upload-area {
         width: 100%;
+        border: 2px dashed #f5a5a8;
+        border-radius: 12px;
+        background: #fff5f5;
+        padding: 28px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        position: relative;
+      }
+
+      .upload-area:hover {
+        border-color: #e91e24;
+        background: #fff0f0;
+      }
+
+      .upload-area.dragover {
+        border-color: #e91e24;
+        background: #ffe8e8;
+        transform: scale(1.01);
+      }
+
+      .upload-area.has-file {
+        border-color: #00b142;
+        background: #f0fff4;
+      }
+
+      .upload-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 12px;
+      }
+
+      .upload-icon svg {
+        width: 100%;
+        height: 100%;
+        fill: #e91e24;
+      }
+
+      .upload-area.has-file .upload-icon svg {
+        fill: #00b142;
+      }
+
+      .upload-text {
+        font-size: 15px;
+        font-weight: 600;
+        color: #e91e24;
+      }
+
+      .upload-area.has-file .upload-text {
+        color: #00b142;
+      }
+
+      .upload-filename {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 8px;
+        word-break: break-all;
+      }
+
+      input[type="file"].hidden-input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
       }
 
       .hint {
@@ -401,17 +464,29 @@
 
           <div>
             <label for="id_image" class="file-label"
-              >Upload Payment Screenshot</label
+              >Upload your Pyament Screenshot</label
             >
             <div class="file-input-wrap">
-              <input
-                type="file"
-                name="image"
-                id="id_image"
-                accept="image/*"
-                required
-                aria-required="true"
-              />
+              <div class="upload-area" id="upload-area">
+                <div class="upload-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+                    />
+                  </svg>
+                </div>
+                <div class="upload-text">Upload Photos</div>
+                <div class="upload-filename" id="upload-filename"></div>
+                <input
+                  type="file"
+                  name="image"
+                  id="id_image"
+                  class="hidden-input"
+                  accept="image/*"
+                  required
+                  aria-required="true"
+                />
+              </div>
             </div>
             <div class="hint">
               Accepted: JPG, PNG. Max 5MB. Please include the UPI reference or
@@ -538,6 +613,49 @@
           if(e.key === 'selectedSeats' || e.key === 'seatPrices'){
             renderSelectedSeatsSummary();
           }
+        });
+
+        // File upload area interaction
+        document.addEventListener('DOMContentLoaded', function() {
+          var uploadArea = document.getElementById('upload-area');
+          var fileInput = document.getElementById('id_image');
+          var filenameDisplay = document.getElementById('upload-filename');
+          var uploadText = uploadArea.querySelector('.upload-text');
+
+          // Handle file selection
+          fileInput.addEventListener('change', function() {
+            if (fileInput.files && fileInput.files.length > 0) {
+              var fileName = fileInput.files[0].name;
+              filenameDisplay.textContent = fileName;
+              uploadArea.classList.add('has-file');
+              uploadText.textContent = 'Photo Selected ✓';
+            } else {
+              filenameDisplay.textContent = '';
+              uploadArea.classList.remove('has-file');
+              uploadText.textContent = 'Upload Photos';
+            }
+          });
+
+          // Drag and drop
+          uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+          });
+
+          uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+          });
+
+          uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+              fileInput.files = e.dataTransfer.files;
+              var event = new Event('change', { bubbles: true });
+              fileInput.dispatchEvent(event);
+            }
+          });
         });
       })();
     </script>

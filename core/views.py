@@ -100,13 +100,28 @@ def seat_selection(request):
 				missing_seats.append(normalized_seat_id)
 		
 		if missing_seats:
-			return HttpResponse(f"The following seats do not exist: {', '.join(missing_seats)}", status=400)
+			return render(request, 'error_message.html', {
+				'title': 'Seats Not Found',
+				'message': 'The following seats do not exist in our system.',
+				'unavailable_seats': missing_seats
+			}, status=400)
 		
 		# Try to hold the seats
 		success, message, held_seats = SeatReservationService.hold_seats(normalized_seats, user)
 		
 		if not success:
-			return HttpResponse(message, status=400)
+			# Extract seat numbers from the message if possible
+			import re
+			seat_match = re.search(r'Seats? ([\w\-,\s]+) are not available', message)
+			unavailable_seats = []
+			if seat_match:
+				unavailable_seats = [s.strip() for s in seat_match.group(1).split(',')]
+			
+			return render(request, 'error_message.html', {
+				'title': 'Seats Unavailable',
+				'message': 'Sorry, the seats you selected are no longer available.',
+				'unavailable_seats': unavailable_seats
+			}, status=400)
 		
 		return redirect('payment')
 	

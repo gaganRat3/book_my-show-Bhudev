@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title|default:"Error" }}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: linear-gradient(
+          135deg,
+          #1a1a2e 0%,
+          #16213e 50%,
+          #0f3460 100%
+        );
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: #111827;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .error-card {
+        max-width: 450px;
+        width: 100%;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        padding: 40px 32px;
+        text-align: center;
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .error-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        box-shadow: 0 10px 30px rgba(238, 90, 90, 0.3);
+      }
+      .error-icon svg {
+        width: 40px;
+        height: 40px;
+        fill: #fff;
+      }
+      .error-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: #1a1a2e;
+      }
+      .error-message {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 12px;
+        line-height: 1.6;
+      }
+      .seat-list {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 20px 0;
+      }
+      .seat-list-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #dc2626;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .seat-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+      .seat-badge {
+        background: #dc2626;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+      }
+      .info-text {
+        font-size: 14px;
+        color: #9ca3af;
+        margin-bottom: 24px;
+        padding: 12px;
+        background: #f9fafb;
+        border-radius: 10px;
+      }
+      .info-text svg {
+        width: 16px;
+        height: 16px;
+        fill: #9ca3af;
+        vertical-align: middle;
+        margin-right: 6px;
+      }
+      .btn-group {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 15px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: none;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #e91e24, #c41920);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(233, 30, 36, 0.35);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(233, 30, 36, 0.45);
+      }
+      .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 2px solid #e5e7eb;
+      }
+      .btn-secondary:hover {
+        background: #e5e7eb;
+        transform: translateY(-2px);
+      }
+      .btn svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        fill: currentColor;
+      }
+      @media (max-width: 480px) {
+        .error-card {
+          padding: 32px 20px;
+        }
+        .error-title {
+          font-size: 20px;
+        }
+        .btn-group {
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="error-card">
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+          />
+        </svg>
+      </div>
+
+      <h1 class="error-title">{{ title|default:"Seats Unavailable" }}</h1>
+
+      <p class="error-message">
+        {{ message|default:"The selected seats are no longer available." }}
+      </p>
+
+      {% if unavailable_seats %}
+      <div class="seat-list">
+        <div class="seat-list-title">Unavailable Seats</div>
+        <div class="seat-badges">
+          {% for seat in unavailable_seats %}
+          <span class="seat-badge">{{ seat }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="info-text">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+          />
+        </svg>
+        These seats may have been booked by another user or are currently on
+        hold. Please select different seats.
+      </div>
+
+      <div class="btn-group">
+        <a href="{% url 'seat_selection' %}" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+            />
+          </svg>
+          Choose Other Seats
+        </a>
+        <a href="{% url 'landing_form' %}" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+          </svg>
+          Go Home
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
