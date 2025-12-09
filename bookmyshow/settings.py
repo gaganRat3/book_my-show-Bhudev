@@ -2,6 +2,7 @@
 CSRF_TRUSTED_ORIGINS = [
     # Include the new ngrok host without a trailing slash.
     'https://keyla-mirier-pebbly.ngrok-free.dev',
+    'http://keyla-mirier-pebbly.ngrok-free.dev',
     'https://*.ngrok-free.dev',
 ]
 """
@@ -40,14 +41,14 @@ BASE_URL = 'https://keyla-mirier-pebbly.ngrok-free.dev'
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
+    # 'daphne',  # Removed - using AJAX polling instead of WebSockets
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
+    # 'channels',  # Removed - using AJAX polling instead of WebSockets
     'core',
 ]
 
@@ -79,14 +80,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bookmyshow.wsgi.application'
-ASGI_APPLICATION = 'bookmyshow.asgi.application'
+# ASGI_APPLICATION = 'bookmyshow.asgi.application'  # Removed - using standard WSGI with AJAX polling
 
-# Channels Layer Configuration (using in-memory for development)
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
-}
+# Channels Layer Configuration - REMOVED (using AJAX polling instead of WebSockets)
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer'
+#     }
+# }
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

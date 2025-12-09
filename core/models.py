@@ -82,33 +82,35 @@ class SelectedSeat(models.Model):
 # SIGNALS MUST BE AT THE END
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+# COMMENTED OUT FOR AJAX POLLING (NO WEBSOCKETS)
+# from asgiref.sync import async_to_sync
+# from channels.layers import get_channel_layer
 
-@receiver(post_save, sender='core.Seat')
-def broadcast_seat_status_change(sender, instance, created, **kwargs):
-    """Broadcast seat status changes to all connected WebSocket clients"""
-    if not created:  # Only broadcast changes, not creation
-        channel_layer = get_channel_layer()
-        seat_numbers = [instance.seat_number]
-        
-        # Determine status for broadcasting
-        if instance.status == 'booked' or instance.is_booked:
-            status = 'booked'
-        elif instance.status == 'held':
-            status = 'held'
-        else:
-            status = 'available'
-        
-        async_to_sync(channel_layer.group_send)(
-            'seat_updates',
-            {
-                'type': 'seat_status_update',
-                'seats': seat_numbers,
-                'status': status
-            }
-        )
-        print(f"[WebSocket] Broadcasting seat {status}: {seat_numbers}")
+# COMMENTED OUT - USING AJAX POLLING INSTEAD OF WEBSOCKETS
+# @receiver(post_save, sender='core.Seat')
+# def broadcast_seat_status_change(sender, instance, created, **kwargs):
+#     """Broadcast seat status changes to all connected WebSocket clients"""
+#     if not created:  # Only broadcast changes, not creation
+#         channel_layer = get_channel_layer()
+#         seat_numbers = [instance.seat_number]
+#         
+#         # Determine status for broadcasting
+#         if instance.status == 'booked' or instance.is_booked:
+#             status = 'booked'
+#         elif instance.status == 'held':
+#             status = 'held'
+#         else:
+#             status = 'available'
+#         
+#         async_to_sync(channel_layer.group_send)(
+#             'seat_updates',
+#             {
+#                 'type': 'seat_status_update',
+#                 'seats': seat_numbers,
+#                 'status': status
+#             }
+#         )
+#         print(f"[WebSocket] Broadcasting seat {status}: {seat_numbers}")
 
 @receiver(post_delete, sender=LandingFormData)
 def release_user_seats_on_delete(sender, instance, **kwargs):
@@ -132,17 +134,18 @@ def release_user_seats_on_delete(sender, instance, **kwargs):
             print(f"Keeping booked seat: {seat.seat_number} (payment completed)")
         selected_seat.delete()
     
-    # Broadcast ONLY released held seats
-    if released_seat_numbers:
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'seat_updates',
-            {
-                'type': 'seat_status_update',
-                'seats': released_seat_numbers,
-                'status': 'available'
-            }
-        )
-        print(f"[WebSocket] Broadcasting held seats released: {released_seat_numbers}")
+    # COMMENTED OUT - USING AJAX POLLING INSTEAD OF WEBSOCKETS
+    # # Broadcast ONLY released held seats
+    # if released_seat_numbers:
+    #     channel_layer = get_channel_layer()
+    #     async_to_sync(channel_layer.group_send)(
+    #         'seat_updates',
+    #         {
+    #             'type': 'seat_status_update',
+    #             'seats': released_seat_numbers,
+    #             'status': 'available'
+    #         }
+    #     )
+    #     print(f"[WebSocket] Broadcasting held seats released: {released_seat_numbers}")
     
     print(f"User {instance.id} deletion complete - booked seats preserved.")

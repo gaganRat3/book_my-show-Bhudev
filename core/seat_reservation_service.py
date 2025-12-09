@@ -2,8 +2,9 @@ from django.db import transaction
 from django.utils import timezone
 from datetime import timedelta
 from .models import Seat, SelectedSeat, LandingFormData
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+# COMMENTED OUT FOR AJAX POLLING (NO WEBSOCKETS)
+# from asgiref.sync import async_to_sync
+# from channels.layers import get_channel_layer
 from django.core.exceptions import ValidationError
 
 
@@ -52,8 +53,9 @@ class SeatReservationService:
         for seat in held_seats:
             SelectedSeat.objects.create(seat=seat, user=user, price=seat.price)
         
-        # Broadcast seat holds to all clients
-        cls._broadcast_seat_updates([s.seat_number for s in held_seats], 'held', user.id)
+        # COMMENTED OUT - USING AJAX POLLING INSTEAD OF WEBSOCKETS
+        # # Broadcast seat holds to all clients
+        # cls._broadcast_seat_updates([s.seat_number for s in held_seats], 'held', user.id)
         
         return True, f"Successfully held {len(held_seats)} seats", held_seats
     
@@ -75,8 +77,9 @@ class SeatReservationService:
         held_seat_ids = [seat.id for seat in held_seats]
         SelectedSeat.objects.filter(user=user, seat__id__in=held_seat_ids).delete()
         
-        if released_seat_numbers:
-            cls._broadcast_seat_updates(released_seat_numbers, 'available', user.id)
+        # COMMENTED OUT - USING AJAX POLLING INSTEAD OF WEBSOCKETS
+        # if released_seat_numbers:
+        #     cls._broadcast_seat_updates(released_seat_numbers, 'available', user.id)
         
         return released_seat_numbers
     
@@ -112,8 +115,9 @@ class SeatReservationService:
             seat.book_seat()
             booked_seats.append(seat.seat_number)
         
-        # Broadcast bookings
-        cls._broadcast_seat_updates(booked_seats, 'booked', user.id)
+        # COMMENTED OUT - USING AJAX POLLING INSTEAD OF WEBSOCKETS
+        # # Broadcast bookings
+        # cls._broadcast_seat_updates(booked_seats, 'booked', user.id)
         
         return True, f"Successfully booked {len(booked_seats)} seats"
     
@@ -132,8 +136,11 @@ class SeatReservationService:
             SelectedSeat.objects.filter(seat=seat, user=seat.reserved_by).delete()
             seat.release_hold()
         
+        # COMMENTED OUT - USING AJAX POLLING INSTEAD OF WEBSOCKETS
+        # if released_seats:
+        #     cls._broadcast_seat_updates(released_seats, 'available')
+        
         if released_seats:
-            cls._broadcast_seat_updates(released_seats, 'available')
             print(f"Released {len(released_seats)} expired seat holds: {', '.join(released_seats)}")
         
         return len(released_seats)
@@ -167,17 +174,18 @@ class SeatReservationService:
         
         return status
     
-    @classmethod
-    def _broadcast_seat_updates(cls, seat_numbers, status, user_id=None):
-        """Broadcast seat status updates via WebSocket"""
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'seat_updates',
-            {
-                'type': 'seat_status_update',
-                'seats': seat_numbers,
-                'status': status,
-                'user_id': user_id
-            }
-        )
-        print(f"[WebSocket] Broadcasting seats {status}: {seat_numbers} (user_id: {user_id})")
+    # COMMENTED OUT - USING AJAX POLLING INSTEAD OF WEBSOCKETS
+    # @classmethod
+    # def _broadcast_seat_updates(cls, seat_numbers, status, user_id=None):
+    #     """Broadcast seat status updates via WebSocket"""
+    #     channel_layer = get_channel_layer()
+    #     async_to_sync(channel_layer.group_send)(
+    #         'seat_updates',
+    #         {
+    #             'type': 'seat_status_update',
+    #             'seats': seat_numbers,
+    #             'status': status,
+    #             'user_id': user_id
+    #         }
+    #     )
+    #     print(f"[WebSocket] Broadcasting seats {status}: {seat_numbers} (user_id: {user_id})")

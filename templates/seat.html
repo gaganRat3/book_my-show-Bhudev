@@ -511,106 +511,121 @@
           );
         }, 1000); // Check after 1 second to allow all processing to complete
 
-        // WebSocket connection for real-time seat updates
-        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const wsUrl = `${protocol}//${window.location.host}/ws/seats/`;
-        console.log("[WebSocket] Connecting to:", wsUrl);
+        // AJAX Polling for real-time seat updates (replaces WebSocket)
+        console.log("[AJAX Polling] Starting seat status polling...");
 
-        const socket = new WebSocket(wsUrl);
-
-        socket.onopen = function (e) {
-          console.log("[WebSocket] Connection established");
+        let lastKnownSeats = {
+          booked: [...bookedSeats],
+          held: [...heldSeats],
+          userHeld: [...userHeldSeats],
         };
 
-        socket.onmessage = function (event) {
-          const data = JSON.parse(event.data);
-          console.log("[WebSocket] Received:", data);
+        // Function to poll seat status from server
+        function pollSeatStatus() {
+          fetch(window.location.pathname, {
+            method: "GET",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            },
+          })
+            .then((response) => response.text())
+            .then((html) => {
+              // Parse the HTML to extract seat data
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, "text/html");
+              const scripts = doc.querySelectorAll("script");
 
-          // Handle old seat_update format for backward compatibility
-          if (data.type === "seat_update" && data.seats) {
-            data.seats.forEach(function (seatNumber) {
-              const mappedSeatId = backendToFrontendSeatId(seatNumber);
-              if (markSeatAsBooked(mappedSeatId)) {
-                const seatElement = findSeatElement(mappedSeatId);
-                if (seatElement) {
+              // Extract seat data from script tags
+              scripts.forEach((script) => {
+                const content = script.textContent;
+
+                // Extract booked seats
+                const bookedMatch = content.match(
+                  /window\.bookedSeats\s*=\s*(\[.*?\]);/s
+                );
+                if (bookedMatch) {
+                  const newBookedSeats = JSON.parse(bookedMatch[1]);
+                  updateSeatsFromPoll(
+                    newBookedSeats,
+                    lastKnownSeats.booked,
+                    "booked"
+                  );
+                  lastKnownSeats.booked = newBookedSeats;
+                }
+
+                // Extract held seats
+                const heldMatch = content.match(
+                  /window\.heldSeats\s*=\s*(\[.*?\]);/s
+                );
+                if (heldMatch) {
+                  const newHeldSeats = JSON.parse(heldMatch[1]);
+                  updateSeatsFromPoll(
+                    newHeldSeats,
+                    lastKnownSeats.held,
+                    "held"
+                  );
+                  lastKnownSeats.held = newHeldSeats;
+                }
+              });
+
+              console.log("[AJAX Polling] Updated seat status");
+            })
+            .catch((error) => {
+              console.error(
+                "[AJAX Polling] Error fetching seat status:",
+                error
+              );
+            });
+        }
+
+        // Function to update seats based on polling data
+        function updateSeatsFromPoll(newSeats, oldSeats, status) {
+          // Find newly added seats
+          const addedSeats = newSeats.filter(
+            (seat) => !oldSeats.includes(seat)
+          );
+
+          // Find removed seats (became available)
+          const removedSeats = oldSeats.filter(
+            (seat) => !newSeats.includes(seat)
+          );
+
+          // Update newly booked/held seats
+          addedSeats.forEach((seatNumber) => {
+            const mappedSeatId = backendToFrontendSeatId(seatNumber);
+            const seatElement = findSeatElement(mappedSeatId);
+
+            if (seatElement) {
+              if (status === "booked") {
+                // Don't override if already booked
+                if (!seatElement.classList.contains("reserved")) {
+                  console.log(`[AJAX Polling] Marking ${seatNumber} as booked`);
+                  markSeatAsBooked(mappedSeatId);
                   seatElement.style.animation = "seatBooked 0.5s ease";
                 }
+              } else if (status === "held") {
+                console.log(`[AJAX Polling] Marking ${seatNumber} as held`);
+                updateSeatStatus(seatElement, "held");
               }
-            });
-          }
+            }
+          });
 
-          // Handle new seat_status_update format
-          if (data.type === "seat_status_update" && data.seats && data.status) {
-            console.log(
-              `[WebSocket] Processing ${data.status} update for user_id ${data.user_id}, current user: ${window.currentUserId}`
-            );
+          // Update released seats (only if not booked)
+          removedSeats.forEach((seatNumber) => {
+            const mappedSeatId = backendToFrontendSeatId(seatNumber);
+            const seatElement = findSeatElement(mappedSeatId);
 
-            data.seats.forEach(function (seatNumber) {
-              // Use the seat mapping function to find the correct frontend seat ID
-              const mappedSeatId = backendToFrontendSeatId(seatNumber);
-              const seatElement = findSeatElement(mappedSeatId);
-              if (seatElement) {
-                // PROTECTION: Never override booked seats with WebSocket updates
-                if (
-                  seatElement.classList.contains("reserved") &&
-                  seatElement.classList.contains("red")
-                ) {
-                  console.log(
-                    `[WebSocket] PROTECTED: Ignoring update for booked seat ${seatNumber} (${data.status})`
-                  );
-                  return; // Skip this seat - it's booked and should not be changed
-                }
+            if (seatElement && !seatElement.classList.contains("reserved")) {
+              console.log(`[AJAX Polling] Releasing ${seatNumber}`);
+              updateSeatStatus(seatElement, "available");
+              seatElement.style.animation = "seatReleased 0.3s ease";
+            }
+          });
+        }
 
-                // Handle held seats with user context
-                if (data.status === "held") {
-                  if (data.user_id && data.user_id === window.currentUserId) {
-                    // This is the current user's hold - style as user-held (green)
-                    console.log(
-                      `[WebSocket] Marking ${seatNumber} as held by current user`
-                    );
-                    markSeatAsUserHeld(mappedSeatId);
-                  } else {
-                    // This is held by another user - style as held (orange)
-                    console.log(
-                      `[WebSocket] Marking ${seatNumber} as held by other user (${data.user_id})`
-                    );
-                    updateSeatStatus(seatElement, "held");
-                  }
-                } else {
-                  // Handle booked/available normally
-                  updateSeatStatus(seatElement, data.status);
-                }
-
-                console.log(
-                  `[WebSocket] Updated seat ${seatNumber} -> ${mappedSeatId} to ${data.status}`
-                );
-              } else {
-                console.warn(
-                  `[WebSocket] Could not find seat element for ${seatNumber} (mapped: ${mappedSeatId})`
-                );
-              }
-            });
-          }
-        };
-
-        socket.onclose = function (event) {
-          if (event.wasClean) {
-            console.log(
-              `[WebSocket] Connection closed cleanly, code=${event.code} reason=${event.reason}`
-            );
-          } else {
-            console.log("[WebSocket] Connection died");
-          }
-          // Attempt to reconnect after 3 seconds
-          setTimeout(function () {
-            console.log("[WebSocket] Attempting to reconnect...");
-            location.reload();
-          }, 3000);
-        };
-
-        socket.onerror = function (error) {
-          console.error("[WebSocket] Error:", error);
-        };
+        // Poll every 5 seconds for updates
+        setInterval(pollSeatStatus, 5000);
+        console.log("[AJAX Polling] Polling every 5 seconds for seat updates");
       });
     </script>
     <meta charset="utf-8" />
