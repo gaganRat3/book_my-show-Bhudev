@@ -5,7 +5,12 @@ class LandingForm(forms.Form):
     name = forms.CharField(max_length=100, required=True)
     phone = forms.CharField(max_length=15, required=True, label='Phone Number')
     email = forms.EmailField(required=True, label='Email')
-    dob = forms.DateField(required=True, label='Date of Birth', widget=forms.TextInput())
+    dob = forms.DateField(
+        required=True,
+        label='Date of Birth',
+        widget=forms.TextInput(),
+        input_formats=['%d-%m-%Y']
+    )
 
 class PaymentScreenshotForm(forms.Form):
     image = forms.ImageField(required=True)
