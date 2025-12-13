@@ -18,6 +18,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,7 +34,7 @@ SECRET_KEY = 'django-insecure-zw3y**$+h^&j+i@0(-6@wew6)z%(qh=dngz83-o9(nh8n)239j
 DEBUG = True
 
 # Allow ngrok public link
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '817a7950f73e.ngrok-free.app', 'testserver', 'keyla-mirier-pebbly.ngrok-free.dev']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '817a7950f73e.ngrok-free.app', 'testserver', 'seat-booking-bhudevnetwork.pythonanywhere.com']
 
 # Public base URL for ngrok
 BASE_URL = 'https://keyla-mirier-pebbly.ngrok-free.dev'
@@ -134,8 +135,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Media files (uploads)
 MEDIA_URL = '/media/'
