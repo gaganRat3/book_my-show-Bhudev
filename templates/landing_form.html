@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Bhudev Kalakaar 2025 seat booking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
@@ -10,6 +11,27 @@
         <div class="movie-form-header">
           <span class="movie-icon">🎬</span>
           <h1>Welcome to Bhudev Kalakaar 2025 seat booking </h1>
+          <p class="movie-sub event-details">
+            <span class="event-title">Event Details</span>
+
+            <div class="event-row">
+              <span class="event-label">Date:</span>
+              <span class="event-value">25/12/2025 (Sunday)</span>
+            </div>
+
+            <div class="event-row">
+              <span class="event-label">Time:</span>
+              <span class="event-value">9 am to 6 pm</span>
+            </div>
+
+            <div class="event-row">
+              <span class="event-label">Venue:</span>
+              <span class="event-value">
+                Sir Sayajirao Nagar Gruh,<br />
+                Besides Galleria Mall, Akota, Vadodara
+              </span>
+            </div>
+          </p>
           <p class="movie-sub">
             Book your tickets for the best events!
           </p>
@@ -69,7 +91,8 @@
         border-radius: 20px;
         box-shadow: 0 8px 32px rgba(90, 36, 120, 0.18);
         padding: 40px 32px 32px 32px;
-        width: 370px;
+        width: 100%;
+        max-width: 370px;
         text-align: center;
         border: 2px solid #d81b60;
         display: flex;
@@ -140,33 +163,84 @@
       .movie-form-btn:hover {
         background: linear-gradient(90deg, #6a1b9a 0%, #d81b60 100%);
       }
-        /* Responsive styles for mobile */
-        @media (max-width: 600px) {
-          .movie-form-card {
-            width: 96vw;
-            min-width: 0;
-            max-width: 99vw;
-            padding: 18px 8px 18px 8px;
-            border-radius: 12px;
-          }
-          .movie-form-header h1 {
-            font-size: 1.2rem;
-          }
-          .movie-icon {
-            font-size: 1.6rem;
-          }
-          .movie-form-group label {
-            font-size: 0.95rem;
-          }
-          .movie-form-group input {
-            font-size: 0.95rem;
-            padding: 8px 8px;
-          }
-          .movie-form-btn {
-            font-size: 1rem;
-            padding: 10px 0;
-          }
+      @media (max-width: 600px) {
+        .movie-bg {
+          padding: 16px;
         }
+
+        .movie-form-card {
+          width: 100%;
+          max-width: 420px;
+          padding: 20px 14px;
+          border-radius: 14px;
+        }
+
+        .movie-form-header h1 {
+          font-size: 1.25rem;
+          line-height: 1.35;
+        }
+
+        .movie-icon {
+          font-size: 1.8rem;
+        }
+
+        .event-row {
+          grid-template-columns: 60px 1fr;
+          padding-left: 8px;
+          font-size: 0.9rem;
+        }
+
+        .movie-form-group label {
+          font-size: 0.95rem;
+        }
+
+        .movie-form-group input {
+          font-size: 1rem;
+          padding: 10px;
+        }
+
+        .movie-form-btn {
+          font-size: 1.05rem;
+          padding: 12px 0;
+        }
+      }
+      /* Event Details alignment */
+      .event-details {
+        margin-top: 10px;
+        margin-bottom: 14px;
+        text-align: left;
+        width: 100%;
+      }
+
+      .event-title {
+        display: block;
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #6a1b9a;
+        margin-bottom: 8px;
+      }
+      
+      .event-row {
+        display: grid;
+        grid-template-columns: 70px 1fr;
+        gap: 6px;
+        margin-bottom: 4px;
+        font-size: 0.95rem;
+        color: #6a1b9a;
+        padding-left: 20px;
+
+      }
+
+      .event-label {
+        font-weight: 600;
+        text-align: left;
+      }
+
+      .event-value {
+        text-align: left;
+        line-height: 1.4;
+      }
     </style>
   </body>
 </html>
