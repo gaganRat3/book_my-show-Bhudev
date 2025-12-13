@@ -61,6 +61,7 @@ def landing_form(request):
 			user = LandingFormData.objects.create(
 				name=form.cleaned_data['name'],
 				phone=form.cleaned_data['phone'],
+				email=form.cleaned_data.get('email', ''),
 				dob=form.cleaned_data['dob']
 			)
 			request.session['user_id'] = user.id
@@ -258,7 +259,18 @@ def payment(request):
 			# Create payment screenshot record
 			PaymentScreenshot.objects.create(user=user, image=form.cleaned_data['image'])
 			print(f"[Payment Confirmed] {message}")
-			
+
+			# Send auto message to user (email if provided)
+			if user.email:
+				from django.core.mail import send_mail
+				send_mail(
+					subject='Payment Received - Bhudev Kalakaar 2025',
+					message=f'Thank you {user.name} for your payment. We have received your payment and will contact you shortly.',
+					from_email=None,  # Uses DEFAULT_FROM_EMAIL
+					recipient_list=[user.email],
+					fail_silently=True,
+				)
+			# You can add SMS sending logic here if needed
 			return redirect('payment_confirmation')
 	else:
 		form = PaymentScreenshotForm()
