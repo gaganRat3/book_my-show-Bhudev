@@ -6,6 +6,7 @@ from datetime import timedelta
 class LandingFormData(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
+    email = models.EmailField(blank=True, null=True)
     dob = models.DateField()
     submitted_at = models.DateTimeField(auto_now_add=True)
 
