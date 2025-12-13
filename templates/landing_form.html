@@ -58,6 +58,25 @@
         </form>
       </div>
     </div>
+    <script>
+      // Auto-insert dashes for DD-MM-YYYY in Date of Birth field
+      document.addEventListener('DOMContentLoaded', function() {
+        var dobInput = document.getElementById('id_dob');
+        if (dobInput) {
+          dobInput.setAttribute('placeholder', 'DD-MM-YYYY');
+          dobInput.setAttribute('maxlength', '10');
+          dobInput.addEventListener('input', function(e) {
+            let v = dobInput.value.replace(/[^0-9]/g, '');
+            if (v.length > 2 && v.length <= 4) {
+              v = v.slice(0,2) + '-' + v.slice(2);
+            } else if (v.length > 4) {
+              v = v.slice(0,2) + '-' + v.slice(2,4) + '-' + v.slice(4,8);
+            }
+            dobInput.value = v;
+          });
+        }
+      });
+    </script>
     <style>
       body {
         background: linear-gradient(120deg, #f8f9fa 0%, #e3f2fd 100%);
@@ -171,7 +190,7 @@
         .movie-form-card {
           width: 100%;
           max-width: 420px;
-          padding: 20px 14px;
+          padding: 20px 14px 20px 14px;
           border-radius: 14px;
         }
 
@@ -197,6 +216,12 @@
         .movie-form-group input {
           font-size: 1rem;
           padding: 10px;
+        }
+
+        /* Add extra padding to form group for mobile so input doesn't touch border */
+        .movie-form-group {
+          padding-left: 4px;
+          padding-right: 4px;
         }
 
         .movie-form-btn {
